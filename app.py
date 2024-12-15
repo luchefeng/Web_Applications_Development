@@ -18,6 +18,7 @@
 1.对用户修改密码的模块补充
 2.对用户个人仪表盘的设计与渲染
 3.对收集到的用户信息的使用（用来做什么，怎么用）
+
 '''
 
 from flask import Flask, render_template, redirect, url_for, request, flash
