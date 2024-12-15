@@ -1,3 +1,25 @@
+'''
+时间：15/12/2024
+
+版本：version 2.0
+
+说明：
+本版本实现了：
+1.成功将用户注册信息存入MySQL的数据库中，数据库所有者可进行查看
+2.修复了代码和网页不同步的问题，即
+  在html中使用flash，使得用户重复注册或登录时输入信息有误时，网页出现相应提示信息并不再进行后续操作
+3.增加仪表盘页面显示，即
+  用户登录成功后会重定向到他们的个人仪表盘界面
+4.将 SQLAlchemy 中的 Query.get() 方法更新为 Session.get()，避免“过时”这个警告
+5.将app.config['SECRET_KEY'] 的配置由明文转为密文，增强flash会话安全性
+6.删除了version 1.0中关于 db_password的大段注释，使代码看上去整洁一些
+
+待实现功能：
+1.对用户修改密码的模块补充
+2.对用户个人仪表盘的设计与渲染
+3.对收集到的用户信息的使用（用来做什么，怎么用）
+'''
+
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
@@ -6,6 +28,7 @@ from dotenv import load_dotenv
 import os
 import pymysql
 
+
 # 加载 .env 文件中的环境变量
 load_dotenv()
 
@@ -13,22 +36,15 @@ load_dotenv()
 db_password = os.getenv('DB_PASSWORD')
 
 
-""""# 初始化Flask应用
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:db_password@localhost/flaskdb'  # 配置MySQL数据库
-app.config['SECRET_KEY'] = 'your_secret_key'  # 用于加密会话
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'  # 未登录时，重定向到login视图
-"""
 # 初始化 Flask 应用
 app = Flask(__name__)
 
 # 配置 MySQL 数据库，正确使用环境变量
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{db_password}@localhost/flaskdb' # 配置MySQL数据库
-app.config['SECRET_KEY'] = 'your_secret_key'  # 用于加密会话
+#app.config['SECRET_KEY'] = 'your_secret_key'  # 用于加密会话
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')# 用于加密会话
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_ECHO'] = True  # 启用 SQLAlchemy 日志,看看它是否真的在插入新记录
 
 # 初始化扩展
 db = SQLAlchemy(app)
@@ -54,7 +70,7 @@ class User(UserMixin, db.Model):
 # 用户加载函数
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 # 用户注册视图
@@ -69,6 +85,7 @@ def register():
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
             flash("用户名或邮箱已存在", "danger")
+            print("用户名或邮箱已存在：", existing_user.username, existing_user.email)  # 添加日志
             return redirect(url_for('register'))
 
         # 创建新用户
