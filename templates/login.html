@@ -15,12 +15,18 @@
         </ul>
     {% endif %}
 {% endwith %}
-<form method="POST" action="{{ url_for('login') }}">
-    <label>用户名</label>
-    <input type="text" name="username" required>
-    <label>密码</label>
-    <input type="password" name="password" required>
-    <button type="submit">登录</button>
-</form>
+     <h2>登录</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div>
+            <label>用户名</label>
+            <input type="text" name="username" required>
+        </div>
+        <div>
+            <label>密码</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">登录</button>
+    </form>
+    <p>没有账号？<a href="{{ url_for('register') }}">立即注册</a></p>
 </body>
 </html>
