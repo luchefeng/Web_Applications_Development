@@ -1,11 +1,12 @@
 # 定义与 `ingredients` 表交互的类和方法
 #用于封装与数据库表 ingredients 的交互逻辑
-"""
-from flask_sqlalchemy import SQLAlchemy
+
+#from flask_sqlalchemy import SQLAlchemy
+from utils.db import db
 from datetime import datetime
 
 
-db = SQLAlchemy()
+#db = SQLAlchemy()
 
 class Ingredient(db.Model):
     '''
@@ -37,4 +38,3 @@ class Ingredient(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }
-"""

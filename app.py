@@ -1,53 +1,27 @@
 '''
-时间：18/12/2024
+时间：19/12/2024
 
-版本：version 3.0
+版本：version 4.0
 
 说明：
 本版本实现了：
-1.可以在数据库处对食材信息进行数据插入
-2.优化了仪表盘界面、登录界面、注册界面，本次新加了一些html文件，
-并且原本的HTML文件也有所修改，使得观感更符合人的自然审美
-3.本次主要想增加食材管理模块，按照AI提示，新建了models、routes和utils的包，
-这样使得原本的用户管理模块和新加的食材管理模块有些混乱
-4.这次解决了一些小的报错，主要是网页重定向时出现的RuntimeError（因为当时创建了两个SQLAlchemy 实例，实际上只能创建一个）
-AttributeError（应把Session.get()改为session.get()，前者是类，不是方法，后者才是这个类里面的一个方法），
-BuilderError（这个url_for和蓝图所用端点有关，解决办法是需要把html中原本的ingredient.update改为ingredient_bp.update_ingredient的样子，
-后者应该是代码中定义的样子，而html中的url_for要与它保持一致才能正确匹配）
-InvalidRequestError（这个报错出现了两次，第一次是外键没有连接，也就是User和Ingredients没有联系起来。详见“5”。第二个是User类已经开始用了，但是它要用到的Ingredient模型还没被找到，解决办法是把Ingredient模型从ingredient_model.py中捞出来放到app.py中，
-再加上实例化的db只能有一个，所以现在整个ingredient_model.py都被注释掉了，
-原本的ingredient_routes中需要从ingredient_model.py中导入Ingredient和db，现在改为从app.py中导入了）
-5.尝试将User和Ingredients用user_id联系起来，使得一个用户可以有自己的食材操作空间。
-这一步使得原本数据库中的Ingredients表被删除，创建了一个新的Ingredients表，其中新增了user_id这一行信息，
-这一步在代码中修改的东西是在User类中新增一个ingredients = db.relationship('Ingredient', backref='owner', lazy=True)
-在Ingredient类中新增一个user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-待实现功能：
-1.之前版本的待实现功能
-2.用户的登出页面不太自然，需要改进
-3.用户未登录时可以试看网页功能，这里要解决的问题是网页本身（demo）的渲染（目前是以html形式展示）
-以及使得demo网页中应包含用户管理信息，现在二者是分开的，无法同时出现在一个页面中，未达到预期效果
-4.目前食材管理模块分为无需登录的demo界面和需要登录才能添加、修改、删除食材的页面，现在遇到的问题是，
-后者和用户登陆以后该怎么连接起来，是在仪表盘重新输入新的网址吗？一来，输入什么网址？
-直接输入食材管理的路由，它显示连接不上，拒绝访问；二来，这样做也不自然，应当是用户登陆后就可以看到修改删除等界面了，
-那这些界面如何和我的路由代码联系起来？还是已经联系起来了只是我自己没想明白？
-5.在网页实现用户对食材添加、修改和删除，而不是只能从数据库实现
-6.明晰两个模块的代码功能，尽可能使代码逻辑清楚，结构清晰，不冗余
-7.多熟悉SQL语句，不能老复制粘贴啊
+1.解决了 User模块和 Ingredient模块的循环导入问题（将两个模块都放入models的包里，
+然后在app.py中更改导入顺序，对实例化db也单独建一个文件进行导入，以此避免循环导入问题）
 
 '''
 
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
 import os
 import pymysql
 from routes.ingredient_routes import ingredient_bp
 from flask_session import Session
-#from models.ingredient_model import Ingredient
-from datetime import datetime
+from models.user_model import User
+from models.ingredient_model import Ingredient
+
+
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
@@ -76,55 +50,6 @@ db = SQLAlchemy(app)
 Session(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # 未登录时，重定向到 login 视图
-
-
-class Ingredient(db.Model):
-    """
-    数据库模型：食材信息
-    """
-    __tablename__ = 'ingredients'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 唯一标识
-    name = db.Column(db.String(100), nullable=False)  # 食材名称
-    quantity = db.Column(db.Float, nullable=False, default=0)  # 数量
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 外键关联到 User 表
-    unit = db.Column(db.String(50), nullable=False, default='')  # 单位
-    calories = db.Column(db.Float, nullable=True)  # 卡路里
-    expiry_date = db.Column(db.DateTime, nullable=True)  # 保质期
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 创建时间
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # 更新时间
-
-    def to_dict(self):
-        """
-        将食材信息转换为字典格式，便于返回 JSON 数据
-        """
-        return {
-            'id': self.id,
-            'name': self.name,
-            'quantity': self.quantity,
-            'unit': self.unit,
-            'calories': self.calories,
-            'expiry_date': self.expiry_date.strftime('%Y-%m-%d') if self.expiry_date else None,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-        }
-
-
-# 用户模型
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    calorie_goal = db.Column(db.Integer, default=2000)  # 每日卡路里需求
-    ingredients = db.relationship('Ingredient', backref='owner', lazy=True)#使用 db.relationship 来简化查询用户与食材的关系。
-
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
 
 

@@ -3,7 +3,9 @@
 
 from flask import Blueprint, request, jsonify, session,redirect, url_for,flash
 #from models.ingredient_model import Ingredient, db
-from app import Ingredient, db
+#from app import Ingredient, db
+from utils.db import db
+from models.ingredient_model import Ingredient
 from flask_login import current_user
 import logging
 
