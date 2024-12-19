@@ -1,0 +1,22 @@
+{
+  "name": "my-web-project",
+  "version": "1.0.0",
+  "description": "A web project using Vue 3 and Flask for calorie tracking and recipe recommendations.",
+  "author": "Your Name",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0",
+    "vuex": "^4.0.0",
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^4.5.0",
+    "@babel/preset-env": "^7.14.0"
+  }
+}
