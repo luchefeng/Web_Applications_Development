@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <h1>Welcome to the Calorie Tracker</h1>
+    <a-divider>With Text</a-divider>
     <p>Log in to track your calorie intake and get personalized recipe recommendations!</p>
     <router-link to="/login">Login</router-link>
     <router-link to="/register">Register</router-link>

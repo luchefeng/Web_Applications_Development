@@ -1,24 +1,32 @@
 <template>
-    <div class="basic-layout">
-        <header>
-        <nav>
-          <router-link to="/">Home</router-link>
-          <router-link to="/login">Login</router-link>
-          <router-link to="/register">Register</router-link>
-          <router-link to="/profile">Profile</router-link>
-          <router-link to="/recipes">Recipes</router-link>
-          <router-link to="/articles">Articles</router-link>
-        </nav>
-      </header>
-      <main>
-        <router-view />
-      </main>
+    <div id="basic-layout">
+      <a-space direction="vertical" :style="{ width: '100%' }" :size="[0, 48]">
+        <a-layout>
+          <a-layout-header class="header">
+            <nav>
+              <router-link to="/">Home</router-link>
+              <router-link to="/login">Login</router-link>
+              <router-link to="/register">Register</router-link>
+              <router-link to="/profile">Profile</router-link>
+              <router-link to="/recipes">Recipes</router-link>
+              <router-link to="/articles">Articles</router-link>
+            </nav>            
+          </a-layout-header>
+          <a-layout-content>
+            <router-view />
+          </a-layout-content>
+          <a-layout-footer class = "footer">
+            <p>Calorie Tracker V0.0</p>
+          </a-layout-footer>
+        </a-layout>
+      </a-space>
     </div>
 </template>
 
-<script setup lang="ts"></script>
+<script lang="ts" setup>
+</script>
 
-<style>
+<style scoped>
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -27,7 +35,7 @@
     color: #2c3e50;
   }
   
-  header {
+  .header {
     background-color: #42b983;
     padding: 10px;
   }
@@ -50,4 +58,14 @@
   main {
     margin-top: 20px;
   }
-  </style>
+
+  .footer {
+    text-align: center;
+    background-color: #42b983;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+</style>
