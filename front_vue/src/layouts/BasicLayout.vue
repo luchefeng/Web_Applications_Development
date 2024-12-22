@@ -12,7 +12,7 @@
               <router-link to="/articles">Articles</router-link>
             </nav>            
           </a-layout-header>
-          <a-layout-content>
+          <a-layout-content class = "content">
             <router-view />
           </a-layout-content>
           <a-layout-footer class = "footer">
