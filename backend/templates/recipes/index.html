@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Recipes</title>
+</head>
+<body>
+    <h1>All Recipes</h1>
+    <ul>
+        {% for recipe in recipes %}
+        <li>
+            <a href="/recipes/{{ recipe.id }}">{{ recipe.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
