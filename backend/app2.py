@@ -8,6 +8,7 @@ import os #这个模块提供了与操作系统交互的功能，包括文件和
 load_dotenv() # 加载.env文件
 
 app = Flask(__name__) # 创建Flask应用
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI') # 配置MySQL数据库
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # 关闭对模型修改的跟踪
 

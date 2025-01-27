@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户操作</title>
+    <script>
+        function showSection(sectionId) {
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('resetSection').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <h1>用户操作</h1>
+    <button onclick="showSection('registerSection')">注册</button>
+    <button onclick="showSection('loginSection')">登录</button>
+    <button onclick="showSection('resetSection')">重置密码</button>
+
+    <div id="registerSection" style="display:none;">
+        <h2>注册</h2>
+        <form method="POST" action="{{ url_for('users.register') }}">
+            <label for="registerUsername">用户名:</label>
+            <input type="text" id="registerUsername" name="username" required><br>
+            <label for="registerEmail">电子邮件:</label>
+            <input type="email" id="registerEmail" name="email" required><br>
+            <label for="registerPassword">密码:</label>
+            <input type="password" id="registerPassword" name="password" required><br>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+
+    <div id="loginSection" style="display:none;">
+        <h2>登录</h2>
+        <form method="POST" action="{{ url_for('users.login') }}">
+            <label for="loginUsername">用户名:</label>
+            <input type="text" id="loginUsername" name="username" required><br>
+            <label for="loginPassword">密码:</label>
+            <input type="password" id="loginPassword" name="password" required><br>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+
+    <div id="resetSection" style="display:none;">
+        <h2>重置密码</h2>
+        <form method="POST" action="{{ url_for('users.reset_password') }}">
+            <label for="resetEmailAddress">电子邮件:</label>
+            <input type="email" id="resetEmailAddress" name="email" required><br>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+</body>
+</html>
