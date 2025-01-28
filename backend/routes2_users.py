@@ -16,68 +16,96 @@
         社交登入: 支持用戶使用社交媒體賬號（如Google、Facebook）快速註冊和登錄。
         用戶反饋: 提供反饋渠道，讓用戶可以報告問題或提出建議。
 '''
-from models2 import db
-from flask  import Blueprint, render_template, request, redirect, url_for, flash
-from models2 import User
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask_login import login_user, login_required, logout_user, current_user
+from models2 import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 
-users_bp = Blueprint('users', __name__) # 创建用戶蓝图
+users_bp = Blueprint('users', __name__)
 
-@users_bp.route('/') # 設置用戶视图路由
+@users_bp.route('/')
 def index():
-    '''用戶视图'''
-    users = User.query.all() # 查询所有用戶
+    users = User.query.all()
     return render_template('users/operations.html', users=users)
 
-@users_bp.route('/<int:id>') # 設置用戶详情视图路由
+@users_bp.route('/<int:id>')
 def user(id):
-    '''用戶详情视图'''
-    user = User.query.get(id) # 查询用戶
+    user = User.query.get(id)
     return render_template('users/user.html', user=user)
 
 @users_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    '''注册视图'''
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        print(f"Received data: username={username}, email={email}, password={password}")
-
         if not email:
             flash('电子邮件不能为空')
             return redirect(url_for('users.register'))
 
-        # 检查用户名是否已存在
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
-            flash('用户名已存在，请选择其他用户名')
+            flash('用户名或邮箱已存在，请选择其他的')
             return redirect(url_for('users.register'))
 
-        new_user = User(username=username, email=email, password_hash=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+        try:
+            new_user = User(username=username, email=email, password_hash=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('注册成功！请登录。')
+        except:
+            db.session.rollback()
+            flash('注册失败，请重试。')
 
-        flash('注册成功！请登录。')
         return redirect(url_for('users.index'))
-    return render_template('users/operations.html')  # 渲染 operations.html
-
+    return render_template('users/operations.html')
 
 @users_bp.route('/login', methods=['POST'])
 def login():
-    '''登录视图'''
     username = request.form['username']
     password = request.form['password']
 
     user = User.query.filter_by(username=username).first()
-    if user and check_password_hash(user.password_hash, password):
-        flash('登录成功！')
-        return redirect(url_for('users.index'))
+
+    if not user:
+        flash('用戶名不存在，請先註冊。')
+        return redirect(url_for('users.register'))
+
+    if user and user.check_password(password):
+        login_user(user)
+        flash('登錄成功！')
+        return redirect(url_for('users.dashboard'))
     else:
-        flash('用户名或密码错误，请重试。')
+        flash('密碼錯誤，請重試。')
         return redirect(url_for('users.index'))
+
+@users_bp.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    session.pop('_flashes', None)  # 清除之前的 flash 消息
+    logout_user()
+    flash('您已登出。')
+    return redirect(url_for('users.index'))
+
+@users_bp.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('users/dashboard.html', user=current_user)
+
+@users_bp.route('/delete_account/<int:id>', methods=['POST'])
+@login_required
+def delete_account(id):
+    user_to_delete = User.query.get(id)
+    if user_to_delete and user_to_delete.id == current_user.id:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash('用戶已成功注銷', 'success')
+    else:
+        flash('未找到該用戶或沒有權限', 'error')
+    return redirect(url_for('users.index'))
+
 
 @users_bp.route('/reset_password', methods=['POST'])
 def reset_password():

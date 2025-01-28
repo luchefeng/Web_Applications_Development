@@ -7,7 +7,7 @@ recipes_bp = Blueprint('recipes', __name__) # 创建食谱蓝图
 def index():
     '''食谱视图'''
     recipes = Recipes.query.all() # 查询所有食谱
-    return render_template('recipes/index.html', recipes=recipes)
+    return render_template('recipes/dashboard.html', recipes=recipes)
 
 @recipes_bp.route('/<int:id>') # 設置食谱详情视图路由
 def recipe(id):

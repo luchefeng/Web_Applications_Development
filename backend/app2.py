@@ -3,6 +3,7 @@ from models2 import db, User, Recipes, Article
 from routes2_users import users_bp
 from routes2_recipes import recipes_bp
 from dotenv import load_dotenv
+from flask_login import LoginManager
 import os #这个模块提供了与操作系统交互的功能，包括文件和目录的操作、环境变量的访问等等
 
 load_dotenv() # 加载.env文件
@@ -17,8 +18,16 @@ db.init_app(app)  # 初始化数据库
 app.register_blueprint(users_bp, url_prefix='/users') # 注册用戶蓝图
 app.register_blueprint(recipes_bp, url_prefix='/recipes') # 注册食谱蓝图
 
+login_manager = LoginManager()  # 初始化 LoginManager
+login_manager.init_app(app)  # 將其綁定到 Flask 應用
+login_manager.login_view = 'users.login'  # 設置登錄視圖
+
 with app.app_context():
     db.create_all() # 创建所有表
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 if __name__ == '__main__':
     app.run(debug=True) # 运行应用

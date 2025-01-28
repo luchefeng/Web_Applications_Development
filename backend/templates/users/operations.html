@@ -9,6 +9,8 @@
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('resetSection').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
+            // 清除 flash 消息
+            document.getElementById('flashMessages').innerHTML = '';
         }
     </script>
 </head>
@@ -17,6 +19,19 @@
     <button onclick="showSection('registerSection')">注册</button>
     <button onclick="showSection('loginSection')">登录</button>
     <button onclick="showSection('resetSection')">重置密码</button>
+
+    <!-- 显示 flash 消息 -->
+    <div id="flashMessages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    </div>
 
     <div id="registerSection" style="display:none;">
         <h2>注册</h2>

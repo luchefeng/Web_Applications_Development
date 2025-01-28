@@ -1,9 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 db = SQLAlchemy( ) # 创建SQLAlchemy实例
 
-class User(db.Model):
+class User(db.Model, UserMixin):# 繼承 UserMixin
     '''用户模型'''
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主键，自動增長
     username = db.Column(db.String(255), unique=True, nullable=False)  # 用户名
