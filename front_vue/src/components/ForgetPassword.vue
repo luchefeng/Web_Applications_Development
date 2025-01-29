@@ -6,20 +6,11 @@
       :validate-messages="validateMessages"
       @finish="onFinish"
     >
-      <a-form-item :name="['user', 'name']" label="Name" :rules="[{ required: true }]">
-        <a-input v-model:value="formState.user.name" />
-      </a-form-item>
       <a-form-item :name="['user', 'email']" label="Email" :rules="[{ type: 'email',required: true }]">
         <a-input v-model:value="formState.user.email" />
       </a-form-item>
       <a-form-item :name="['user', 'password']" label="password" :rules="[{ required: true }]">
         <a-input v-model:value="formState.user.password" />
-      </a-form-item>
-      <a-form-item :name="['user', 'calorie goal']" label="calorie goal" :rules="[{ type: 'number', min: 0, max: 10000 }]">
-        <a-input-number v-model:value="formState.user.calorie_goal" />
-      </a-form-item>
-      <a-form-item :name="['user', 'introduction']" label="Introduction">
-        <a-textarea v-model:value="formState.user.introduction" />
       </a-form-item>
       <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
         <a-button type="primary" html-type="submit">Submit</a-button>
@@ -48,11 +39,8 @@
   };
   const formState = reactive({
     user: {
-      name: '',
-      calorie_goal: '',
       email: '',
       password: '',
-      introduction: '',
     },
   });
   const onFinish = values => {

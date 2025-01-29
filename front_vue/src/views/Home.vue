@@ -7,13 +7,8 @@
         <p>Log in to track your calorie intake and get personalized recipe recommendations!</p>
       </a-col>
       <a-col :flex="1">
-        <a-col>
-          <a-row :flex="2">        
+        <a-col>   
             <div><Login /></div>
-          </a-row>
-          <a-row :flex="2">
-            <router-link to="/register">Register</router-link>
-          </a-row>
         </a-col>
       </a-col>
     </a-row>
@@ -22,7 +17,7 @@
 </template>
 
 <script>
-import Login from '@/components/Login.vue'; // 确保路径正确
+import Login from '@/components/Login.vue'; 
 
 export default {
   name: 'Home',

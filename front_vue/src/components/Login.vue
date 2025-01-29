@@ -1,63 +1,98 @@
 <template>
-  <div class="login">
-    <h2>Login</h2>
-    <form @submit.prevent="login">
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" v-model="username" required />
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" v-model="password" required />
-      </div>
-      <button type="submit">Login</button>
+  <a-form
+    :model="formState"
+    name="normal_login"
+    class="login-form"
+    @finish="onFinish"
+    @finishFailed="onFinishFailed"
+  >
+    <a-form-item
+      label="Username"
+      name="username"
+      :rules="[{ required: true, message: 'Please input your username!' }]"
+    >
+      <a-input v-model:value="formState.username">
+        <template #prefix>
+          <UserOutlined class="site-form-item-icon" />
+        </template>
+      </a-input>
+    </a-form-item>
+
+    <a-form-item
+      label="Password"
+      name="password"
+      :rules="[{ required: true, message: 'Please input your password!' }]"
+    >
+      <a-input-password v-model:value="formState.password">
+        <template #prefix>
+          <LockOutlined class="site-form-item-icon" />
+        </template>
+      </a-input-password>
+    </a-form-item>
+
+    <a-form-item>
+      <a-form-item name="remember" no-style>
+        <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+      </a-form-item>
+      <a class="login-form-forgot" href="">Forgot password</a>
+    </a-form-item>
+
+    <a-form-item>
+      <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+        Log in
+      </a-button>
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-    </form>
-  </div>
+      Or
+      <router-link to="/register">Register</router-link>
+    </a-form-item>
+  </a-form>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import { reactive, ref, computed } from 'vue';
 import axios from 'axios';
 
-export default {
-  name: 'Login',
-  setup() {
-    const username = ref('');
-    const password = ref('');
-    const errorMessage = ref('');
+const formState = reactive({
+  username: '',
+  password: '',
+  remember: true,
+});
 
-    const login = async () => {
-      try {
-        const response = await axios.post('/api/login', {
-          username: username.value,
-          password: password.value,
-        });
-        // Handle successful login (e.g., redirect or store token)
-      } catch (error) {
-        errorMessage.value = 'Invalid username or password';
-      }
-    };
+const errorMessage = ref('');
 
-    return {
-      username,
-      password,
-      errorMessage,
-      login,
-    };
-  },
+const onFinish = async () => {
+  try {
+    const response = await axios.post('http://your-flask-backend-url/login', {
+      username: formState.username,
+      password: formState.password
+    });
+    console.log('Login successful:', response.data);
+    errorMessage.value = ''; // 清除错误消息
+  } catch (error) {
+    console.error('Login failed:', error);
+    errorMessage.value = 'Invalid username or password';
+  }
 };
+
+const onFinishFailed = errorInfo => {
+  console.log('Failed:', errorInfo);
+};
+
+const disabled = computed(() => {
+  return !(formState.username && formState.password);
+});
 </script>
 
 <style scoped>
-.login {
-  max-width: 400px;
-  margin: auto;
-  padding: 1em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+#components-form-demo-normal-login .login-form {
+  max-width: 300px;
 }
-
+#components-form-demo-normal-login .login-form-forgot {
+  float: right;
+}
+#components-form-demo-normal-login .login-form-button {
+  width: 100%;
+}
 .error {
   color: red;
 }

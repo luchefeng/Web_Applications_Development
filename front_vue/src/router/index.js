@@ -6,9 +6,11 @@ import Register from '@/components/Register.vue';
 import Profile from '@/views/Profile.vue';
 import Recipes from '@/views/Recipes.vue';
 import Articles from '@/views/Articles.vue';
+import Home_link from '@/views/Home_link.vue';
 
 const routes = [
   { path: '/', component: Home },
+  { path: '/home_link', component: Home_link },
   { path: '/start', component: Start },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
