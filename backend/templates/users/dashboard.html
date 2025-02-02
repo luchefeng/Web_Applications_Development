@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>儀表盤</title>
+</head>
+<body>
+    <h1>歡迎, {{ user.username }}</h1>
+    <p>這裡是你的儀表盤。</p>
+
+    <!-- 添加登出按鈕 -->
+    <form method="POST" action="{{ url_for('users.logout') }}">
+        <button type="submit">登出</button>
+    </form>
+
+    <!-- 添加註銷用戶按鈕 -->
+    <form method="POST" action="{{ url_for('users.delete_account', id=user.id) }}">
+        <button type="submit" onclick="return confirm('確定要註銷賬戶嗎？此操作無法恢復。')">註銷賬戶</button>
+    </form>
+</body>
+</html>

@@ -1,4 +1,5 @@
 <template>
+  <!-- 表单组件 -->
   <a-form
     :model="formState"
     name="normal_login"
@@ -6,6 +7,7 @@
     @finish="onFinish"
     @finishFailed="onFinishFailed"
   >
+    <!-- 用户名输入框 -->
     <a-form-item
       label="Username"
       name="username"
@@ -18,6 +20,7 @@
       </a-input>
     </a-form-item>
 
+    <!-- 密码输入框 -->
     <a-form-item
       label="Password"
       name="password"
@@ -30,6 +33,7 @@
       </a-input-password>
     </a-form-item>
 
+    <!-- 记住我复选框 -->
     <a-form-item>
       <a-form-item name="remember" no-style>
         <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
@@ -37,6 +41,7 @@
       <a class="login-form-forgot" href="">Forgot password</a>
     </a-form-item>
 
+    <!-- 提交按钮 -->
     <a-form-item>
       <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
         Log in
@@ -49,20 +54,24 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue';
-import axios from 'axios';
+import { reactive, ref, computed } from 'vue'; // 导入 reactive、ref 和 computed 函数
+import axios from 'axios'; // 导入 axios 库，用于发送 HTTP 请求
 
+// 表单状态，使用 reactive 创建响应式对象
 const formState = reactive({
   username: '',
   password: '',
   remember: true,
 });
 
+// 错误消息，使用 ref 创建响应式引用
 const errorMessage = ref('');
 
+// 表单提交处理函数
 const onFinish = async () => {
   try {
-    const response = await axios.post('http://your-flask-backend-url/login', {
+    // 发送 POST 请求到后端登录 API
+    const response = await axios.post('http://localhost:5000/login', {
       username: formState.username,
       password: formState.password
     });
@@ -74,10 +83,12 @@ const onFinish = async () => {
   }
 };
 
+// 表单提交失败处理函数
 const onFinishFailed = errorInfo => {
   console.log('Failed:', errorInfo);
 };
 
+// 计算属性，表单是否禁用
 const disabled = computed(() => {
   return !(formState.username && formState.password);
 });
