@@ -59,22 +59,19 @@ def register():
 
 @users_bp.route('/login', methods=['POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json.get('username')
+    password = request.json.get('password')
 
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        flash('用戶名不存在，請先註冊。')
-        return redirect(url_for('users.register'))
+        return {'message': '用戶名不存在，請先註冊。'}, 400
 
     if user and user.check_password(password):
         login_user(user)
-        flash('登錄成功！')
-        return redirect(url_for('users.dashboard'))
+        return {'message': '登錄成功！'}, 200
     else:
-        flash('密碼錯誤，請重試。')
-        return redirect(url_for('users.index'))
+        return {'message': '密碼錯誤，請重試。'}, 400
 
 @users_bp.route('/logout', methods=['POST'])
 @login_required
