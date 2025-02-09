@@ -38,6 +38,7 @@
   .header {
     background-color: #42b983;
     padding: 10px;
+    position: fixed;
   }
   
   nav {
