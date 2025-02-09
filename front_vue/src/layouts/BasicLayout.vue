@@ -96,6 +96,10 @@
     padding: 10px;
     bottom: 0;
     width: 100%;
+    /*
+    position: static;
+    margin-top: auto;
+    */
   }
 
   .content {
