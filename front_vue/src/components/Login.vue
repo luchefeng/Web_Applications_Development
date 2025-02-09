@@ -71,7 +71,7 @@ const errorMessage = ref('');
 const onFinish = async () => {
   try {
     // 发送 POST 请求到后端登录 API
-    const response = await axios.post('http://localhost:5000/users/login', {
+    const response = await axios.post('http://localhost:5000/login', {
       username: formState.username,
       password: formState.password
     });
