@@ -14,7 +14,7 @@ const routes = [
   { path: '/home_link', component: Home_link },
   { path: '/start', component: Start },
   { path: '/login', component: Login },
-  { path: '/register', component: RegisterP }, // 更改为 RegisterP 组件
+  { path: '/register', component: Register }, // 更改为 RegisterP 组件
   { path: '/profile', component: Profile },
   { path: '/recipes', component: Recipes },
   { path: '/articles', component: Articles },
