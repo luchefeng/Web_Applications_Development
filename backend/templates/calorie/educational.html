@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Educational Content</title>
+    <style>
+        .slider {
+            width: 100%;
+            overflow: hidden;
+        }
+        .slides {
+            display: flex;
+            animation: slide 25s infinite;  /* 將滑動速度調整為20秒 */
+        }
+        .slides div {
+            min-width: 100%;
+            transition: 0.5s;
+        }
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-100%); }
+            50% { transform: translateX(-200%); }
+            75% { transform: translateX(-300%); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>科普栏</h1>
+    <div class="slider">
+        <div class="slides">
+            <div><p>{{ content.definition }}</p></div>
+            <div><p>{{ content.tips }}</p></div>
+            <div><p>{{ content.daily_message }}</p></div>
+            <div><p>{{ content.obesity_risks }}</p></div>
+        </div>
+    </div>
+</body>
+</html>

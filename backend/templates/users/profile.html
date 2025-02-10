@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>個人資料</title>
+</head>
+<body>
+    <h1>個人資料</h1>
+    <form method="POST" action="{{ url_for('users.profile') }}">
+        <label for="avatar_url">頭像URL:</label>
+        <input type="text" id="avatar_url" name="avatar_url" value="{{ user.profile.avatar_url }}"><br>
+
+        <label for="nickname">昵稱:</label>
+        <input type="text" id="nickname" name="nickname" value="{{ user.profile.nickname }}"><br>
+
+        <label for="bio">個性簽名:</label>
+        <textarea id="bio" name="bio">{{ user.profile.bio }}</textarea><br>
+
+        <button type="submit">保存</button>
+    </form>
+</body>
+</html>

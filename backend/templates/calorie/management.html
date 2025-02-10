@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calorie Management</title>
+</head>
+<body>
+    <h1>卡路里管理模块</h1>
+    <ul>
+        <li><a href="{{ url_for('calorie.set_calorie_goal') }}">用户卡路里目标设置模块</a></li>
+        <li><a href="{{ url_for('calorie.educational') }}">科普栏</a></li>
+        <li><a href="{{ url_for('calorie.calorie_calculator') }}">卡路里计算器</a></li>
+        <li><a href="{{ url_for('calorie.record_calorie_intake') }}">卡路里摄入记录</a></li>
+        <li><a href="{{ url_for('calorie.record_weight') }}">体重记录仪</a></li>
+    </ul>
+</body>
+</html>

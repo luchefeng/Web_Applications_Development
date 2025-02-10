@@ -2,11 +2,24 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>儀表盤</title>
+    <title>仪表盘</title>
 </head>
 <body>
-    <h1>歡迎, {{ user.username }}</h1>
-    <p>這裡是你的儀表盤。</p>
+    <h1>欢迎, {{ user.username }}</h1>
+    <p>这里是你的仪表盘。</p>
+
+    <!-- 顯示 flash 消息 -->
+    <div id="flashMessages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    </div>
 
     <!-- 添加登出按鈕 -->
     <form method="POST" action="{{ url_for('users.logout') }}">
@@ -15,7 +28,15 @@
 
     <!-- 添加註銷用戶按鈕 -->
     <form method="POST" action="{{ url_for('users.delete_account', id=user.id) }}">
-        <button type="submit" onclick="return confirm('確定要註銷賬戶嗎？此操作無法恢復。')">註銷賬戶</button>
+        <button type="submit" onclick="return confirm('確定要註銷賬戶嗎？此操作無法恢復。')">注销账户</button>
+    </form>
+
+    <!-- 添加個人資料按鈕 -->
+    <a href="{{ url_for('users.profile') }}">编辑个人资料</a>
+
+    <!-- 添加卡路里管理模塊按鈕 -->
+    <form method="GET" action="{{ url_for('calorie.calorie_management') }}">
+        <button type="submit">卡路里管理模块</button>
     </form>
 </body>
 </html>
