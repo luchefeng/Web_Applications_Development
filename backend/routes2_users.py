@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from models2 import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
+from captcha.image import ImageCaptcha
+import random, string
 
 users_bp = Blueprint('users', __name__)
 
@@ -43,6 +45,12 @@ def register():
 def login():
     username = request.json.get('username')
     password = request.json.get('password')
+    captcha = request.json.get('captcha')
+
+    print(f"Session ID: {session.sid}, CAPTCHA in session: {session.get('captcha')}")  # 添加日誌
+
+    if 'captcha' not in session or session['captcha'] != captcha:
+        return {'message': '驗證碼錯誤！'}, 400
 
     user = User.query.filter_by(username=username).first()
 
@@ -92,13 +100,32 @@ def delete_account(id):
 
 @users_bp.route('/reset_password', methods=['POST'])
 def reset_password():
-    '''重置密碼視圖'''
     email = request.form['email']
     user = User.query.filter_by(email=email).first()
 
     if user:
-        # 這裡可以發送重置密碼的電子郵件，實際情況中需要實現郵件發送功能
         flash('重置密碼的鏈接已發送至您的郵箱。')
     else:
         flash('該電子郵件未註冊。')
     return redirect(url_for('users.index'))
+
+@users_bp.route('/generate-captcha', methods=['GET'])
+def generate_captcha():
+    image = ImageCaptcha()
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+    session['captcha'] = captcha_text
+    print(f"Session ID: {session.sid}, CAPTCHA: {captcha_text}")  # 添加日誌
+    captcha_image = image.generate(captcha_text)
+    response = make_response(captcha_image.read())
+    response.headers['Content-Type'] = 'image/png'
+    return response
+
+@users_bp.route('/verify-captcha', methods=['POST'])
+def verify_captcha():
+    user_input = request.json.get('captcha')
+    captcha_in_session = session.get('captcha')
+    print(f"Received CAPTCHA: {user_input}, Session CAPTCHA: {captcha_in_session}")  # 添加日誌
+    if captcha_in_session and captcha_in_session == user_input:
+        return jsonify({'message': '驗證碼正確！'}), 200
+    else:
+        return jsonify({'message': '驗證碼錯誤！'}), 400
