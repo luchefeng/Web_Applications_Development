@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b44adcea-3dfb-47fb-9c5b-9fd0c4f7a52c" name="Changes" comment="2025.2.13 新增用户登录时的验证码功能">
+      <change afterPath="$PROJECT_DIR$/backend/routes2_calorie.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/calculator.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/educational.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/intake.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/management.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/set_goal.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/templates/calorie/weight.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/models2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/models2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/routes2_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes2_users.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;luchefeng&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:luchefeng/Web_Applications_Development.git&quot;,
+    &quot;accountId&quot;: &quot;68df8fce-271e-4b04-abf1-1526336679c5&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2sr8QfCsik7PXmTWCkxmKwgCI98" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app2.executor": "Run",
+    "Python.test_flask_session.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "branch__with__vite",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.splitter.proportion": "0.29606625"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-a5bc9544c897-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.23654.177" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b44adcea-3dfb-47fb-9c5b-9fd0c4f7a52c" name="Changes" comment="" />
+      <created>1739202319508</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1739202319508</updated>
+    </task>
+    <task id="LOCAL-00001" summary="2025.2.13联通了前后端的登录，并在登录后进入个人仪表盘">
+      <option name="closed" value="true" />
+      <created>1739414493598</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1739414493598</updated>
+    </task>
+    <task id="LOCAL-00002" summary="2025.2.13 新增用户登录时的验证码功能">
+      <option name="closed" value="true" />
+      <created>1739452071996</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1739452071996</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="2025.2.13联通了前后端的登录，并在登录后进入个人仪表盘" />
+    <MESSAGE value="2025.2.13 新增用户登录时的验证码功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="2025.2.13 新增用户登录时的验证码功能" />
+  </component>
+</project>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Set Calorie Goal</title>
+</head>
+<body>
+    <h1>用户卡路里目标设置模块</h1>
+    <form method="POST">
+        性别:
+        <select name="gender" required>
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select><br>
+        年龄: <input type="number" name="age" required><br>
+        身高(cm): <input type="number" name="height" required><br>
+        现有体重(kg): <input type="number" step="0.1" name="current_weight" required><br>
+        目标体重(kg): <input type="number" step="0.1" name="target_weight" required><br>
+        活动水平:
+        <select name="activity_level" required>
+            <option value="久坐">久坐 - 基本不運動</option>
+            <option value="轻度活动">轻度活动 - 偶尔运动或步行</option>
+            <option value="中度活动">中度活动 - 每週運動3-5天</option>
+            <option value="高度活动">高度活动 - 每週運動6-7天</option>
+            <option value="极度活动">极度活动 - 職業運動員</option>
+        </select><br>
+        时间范围(天):
+        <select name="timeframe" required>
+            <option value="30">1个月</option>
+            <option value="45">1.5个月</option>
+            <option value="60">2个月</option>
+            <option value="75">2.5个月</option>
+            <option value="90">3个月</option>
+        </select><br>
+        <button type="submit">设置目标</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
