@@ -20,7 +20,7 @@
       </a-form-item>
       <!-- 密码输入框 -->
       <a-form-item :name="['user', 'password']" label="password" :rules="[{ required: true }]">
-        <a-input v-model:value="formState.user.password" />
+        <a-input-password v-model:value="formState.user.password" />
       </a-form-item>
       <!-- 卡路里目标输入框 -->
       <a-form-item :name="['user', 'calorie goal']" label="calorie goal" :rules="[{ type: 'number', min: 0, max: 10000 }]">
