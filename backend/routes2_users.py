@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from models2 import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,92 +7,85 @@ import random, string
 
 users_bp = Blueprint('users', __name__)
 
-# 用户列表
 @users_bp.route('/')
 def index():
     users = User.query.all()
-    users_data = [{'id': user.id, 'username': user.username, 'email': user.email} for user in users]
-    return jsonify({'message': '用户列表获取成功', 'data': users_data}), 200
+    return render_template('users/operations.html', users=users)
 
-# 单个用户信息
 @users_bp.route('/<int:id>')
 def user(id):
     user = User.query.get(id)
-    if user:
-        return jsonify({'message': '用户信息获取成功', 'data': {'id': user.id, 'username': user.username, 'email': user.email}}), 200
-    else:
-        return jsonify({'message': '用户不存在'}), 404
+    return render_template('users/user.html', user=user)
 
-# 用户注册
 @users_bp.route('/register', methods=['POST'])
 def register():
-    data = request.json
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-
-    if not email or not password or not username:
-        return jsonify({'message': '用户名、邮箱和密码不能为空'}), 400
-
-    existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-    if existing_user:
-        return jsonify({'message': '用户名或邮箱已存在，请选择其他的'}), 400
-
-    try:
+    if request.method == 'POST':
+        username = request.json.get('username')
+        email = request.json.get('email')
+        password = request.json.get('password')
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(username=username, email=email, password_hash=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return jsonify({'message': '注册成功！请登录。'}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': f'注册失败: {str(e)}'}), 500
 
-# 用户登录
+        if not email:
+            return {'message': '電子郵件不能為空'}, 400
+
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            return {'message': '用戶名或郵箱已存在，請選擇其他的'}, 400
+
+        try:
+            new_user = User(username=username, email=email, password_hash=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            return {'message': '註冊成功！請登錄。'}, 201
+        except:
+            db.session.rollback()
+            return {'message': '註冊失敗，請重試。'}, 500
+
 @users_bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    captcha = data.get('captcha')
+    username = request.json.get('username')
+    password = request.json.get('password')
+    captcha = request.json.get('captcha')
+
+    print(f"Session ID: {session.sid}, CAPTCHA in session: {session.get('captcha')}")  # 添加日誌
 
     if 'captcha' not in session or session['captcha'] != captcha:
-        return jsonify({'message': '验证码错误！'}), 400
+        return {'message': '驗證碼錯誤！'}, 400
 
     user = User.query.filter_by(username=username).first()
+
     if not user:
-        return jsonify({'message': '用户名不存在，请先注册。'}), 400
+        return {'message': '用戶名不存在，請先註冊。'}, 400
 
     if user and user.check_password(password):
-        login_user(user)
-        session['user_id'] = user.id
-        return jsonify({'message': '登录成功！', 'data': {'user_id': user.id, 'username': user.username}}), 200
+        session['user_id'] = user.id  # 使用 session 儲存用戶 ID
+        return {'message': '登錄成功！'}, 200
     else:
-        return jsonify({'message': '密码错误，请重试。'}), 400
+        return {'message': '密碼錯誤，請重試。'}, 400
 
-# 用户登出
 @users_bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
+    session.pop('_flashes', None)  # 清除之前的 flash 消息
     logout_user()
-    session.pop('user_id', None)
-    return jsonify({'message': '您已登出。'}), 200
+    flash('您已登出。')
+    return redirect(url_for('users.index'))
 
-# 用户仪表盘
 @users_bp.route('/dashboard')
 @login_required
 def dashboard():
-    user = current_user
-    return jsonify({'message': '仪表盘数据获取成功', 'data': {'username': user.username, 'email': user.email}}), 200
+    return render_template('users/dashboard.html', user=current_user)
 
-# 用户信息
 @users_bp.route('/user-info')
 @login_required
 def user_info():
-    user = current_user
-    return jsonify({'message': '用户信息获取成功', 'data': {'username': user.username, 'email': user.email}}), 200
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    return {
+        'username': user.username,
+        'email': user.email
+    }
 
-# 删除账户
 @users_bp.route('/delete_account/<int:id>', methods=['POST'])
 @login_required
 def delete_account(id):
@@ -100,26 +93,39 @@ def delete_account(id):
     if user_to_delete and user_to_delete.id == current_user.id:
         db.session.delete(user_to_delete)
         db.session.commit()
-        return jsonify({'message': '用户已成功注销'}), 200
+        flash('用戶已成功註銷', 'success')
     else:
-        return jsonify({'message': '未找到该用户或没有权限'}), 403
+        flash('未找到該用戶或沒有權限', 'error')
+    return redirect(url_for('users.index'))
 
-# 生成验证码
+@users_bp.route('/reset_password', methods=['POST'])
+def reset_password():
+    email = request.form['email']
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        flash('重置密碼的鏈接已發送至您的郵箱。')
+    else:
+        flash('該電子郵件未註冊。')
+    return redirect(url_for('users.index'))
+
 @users_bp.route('/generate-captcha', methods=['GET'])
 def generate_captcha():
     image = ImageCaptcha()
     captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     session['captcha'] = captcha_text
+    print(f"Session ID: {session.sid}, CAPTCHA: {captcha_text}")  # 添加日誌
     captcha_image = image.generate(captcha_text)
-    response = jsonify({'message': '验证码生成成功', 'data': {'captcha': captcha_text}})
-    return response, 200
+    response = make_response(captcha_image.read())
+    response.headers['Content-Type'] = 'image/png'
+    return response
 
-# 验证验证码
 @users_bp.route('/verify-captcha', methods=['POST'])
 def verify_captcha():
     user_input = request.json.get('captcha')
     captcha_in_session = session.get('captcha')
+    print(f"Received CAPTCHA: {user_input}, Session CAPTCHA: {captcha_in_session}")  # 添加日誌
     if captcha_in_session and captcha_in_session == user_input:
-        return jsonify({'message': '验证码正确！'}), 200
+        return jsonify({'message': '驗證碼正確！'}), 200
     else:
-        return jsonify({'message': '验证码错误！'}), 400
+        return jsonify({'message': '驗證碼錯誤！'}), 400

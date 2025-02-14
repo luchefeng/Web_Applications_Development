@@ -1,9 +1,12 @@
 # My Web Project - Backend
 
+#本次主要确认验证码功能，详细信息如下：
+
 #本版本将目前所有后端最新文件整合到一起，实现的功能有：
 
-1.将路由部分（routes2_users.py和routes2_calorie.py）原本的模板渲染和flash消息改为了session、message和data。
+1.将路由routes2_calorie.py原本的模板渲染和flash消息改为了session、message和data。
 使得路由返回JSON 格式的响应，更好地与前端交互。
+    但为联通验证码功能，routes_users.py中仅登录、注册和验证码生成与验证做了上述修改，别的路由仍沿用了之前的模板和flash显示
 
 2.用户API目前实现的功能（后端）：
     用户的注册、登录（含验证码功能）、登出、注销账户、个人资料设置、个人仪表盘
