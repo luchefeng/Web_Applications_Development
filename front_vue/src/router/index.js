@@ -8,6 +8,8 @@ import Profile from '@/views/Profile.vue';
 import Recipes from '@/views/Recipes.vue';
 import Articles from '@/views/Articles.vue';
 import Home_link from '@/views/Home_link.vue';
+import Dashboard from '@/views/Dashboard.vue'; // 导入 Dashboard 组件
+import CalorieManagement from '@/views/Calorie_Management.vue'; // 新增，导入 CalorieManagement 组件
 
 const routes = [
   { path: '/', component: Start },
@@ -21,8 +23,13 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue') },
-
+    component: Dashboard // 使用导入的 Dashboard 组件
+  },
+  {
+    path: '/calorie-management', // 新增的路由路径
+    name: 'CalorieManagement',
+    component: CalorieManagement // 使用导入的 CalorieManagement 组件
+  },
 ];
 
 const router = createRouter({

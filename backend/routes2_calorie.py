@@ -1,6 +1,6 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from models2 import db, User, CalorieGoal, CalorieIntake, WeightRecord
+from models2 import db, CalorieGoal, CalorieIntake, WeightRecord
 
 calorie_bp = Blueprint('calorie', __name__)
 
@@ -57,36 +57,3 @@ def calculate_tdee(bmr, activity_level):
         '极度活动': 1.9
     }
     return bmr * activity_multiplier.get(activity_level, 1.375)
-
-# 卡路里摄入记录
-@calorie_bp.route('/record_calorie_intake', methods=['POST'])
-@login_required
-def record_calorie_intake():
-    data = request.json
-    intake = data.get('intake')
-    meal_time = data.get('meal_time')
-    food_item = data.get('food_item')
-
-    if not intake or not meal_time or not food_item:
-        return jsonify({'message': '所有字段均为必填项。'}), 400
-
-    calorie_intake = CalorieIntake(user_id=current_user.id, intake=intake, meal_time=meal_time, food_item=food_item)
-    db.session.add(calorie_intake)
-    db.session.commit()
-    return jsonify({'message': '卡路里摄入记录成功！'}), 200
-
-# 记录体重
-@calorie_bp.route('/record_weight', methods=['POST'])
-@login_required
-def record_weight():
-    data = request.json
-    weight = data.get('weight')
-    date = data.get('date')
-
-    if not weight or not date:
-        return jsonify({'message': '体重和日期是必填项。'}), 400
-
-    weight_record = WeightRecord(user_id=current_user.id, weight=weight, date=date)
-    db.session.add(weight_record)
-    db.session.commit()
-    return jsonify({'message': '体重记录成功！'}), 200
