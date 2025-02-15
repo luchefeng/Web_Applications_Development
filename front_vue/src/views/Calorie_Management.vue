@@ -3,83 +3,77 @@
     <h2>卡路里管理</h2>
 
     <!-- 設置卡路里目標 -->
-    <form @submit.prevent="calculateCalorieGoal">
+    <a-form :model="calorieData" @finish="calculateCalorieGoal" @finishFailed="onFinishFailed">
       <h3>設置卡路里目標</h3>
-      <div>
-        <label for="gender">性别:</label>
-        <select id="gender" v-model="calorieData.gender" required>
-          <option value="男">男</option>
-          <option value="女">女</option>
-        </select>
-      </div>
-      <div>
-        <label for="age">年龄:</label>
-        <input type="number" id="age" v-model="calorieData.age" required />
-      </div>
-      <div>
-        <label for="height">身高 (cm):</label>
-        <input type="number" step="0.1" id="height" v-model="calorieData.height" required />
-      </div>
-      <div>
-        <label for="current_weight">当前体重 (kg):</label>
-        <input type="number" step="0.1" id="current_weight" v-model="calorieData.current_weight" required />
-      </div>
-      <div>
-        <label for="target_weight">目标体重 (kg):</label>
-        <input type="number" step="0.1" id="target_weight" v-model="calorieData.target_weight" required />
-      </div>
-      <div>
-        <label for="activity_level">活动水平:</label>
-        <select id="activity_level" v-model="calorieData.activity_level" required>
-          <option value="久坐">久坐不動（很少或沒有運動）</option>
-          <option value="轻度活动">輕度活動（輕鬆運動/運動1-3天/周）</option>
-          <option value="中度活动">中度活動（中等運動/運動3-5天/周）</option>
-          <option value="高度活动">高度活動（重度運動/運動6-7天/周）</option>
-          <option value="极度活动">極度活動（非常重度運動/體力勞動）</option>
-        </select>
-      </div>
-      <div>
-        <label for="timeframe">减重时间 (天):</label>
-        <input type="number" id="timeframe" v-model="calorieData.timeframe" required />
-      </div>
-      <button type="submit">計算每日卡路里目标</button>
-    </form>
+      <a-form-item label="性别" name="gender" :rules="[{ required: true, message: '請選擇您的性别！' }]">
+        <a-select v-model:value="calorieData.gender">
+          <a-select-option value="男">男</a-select-option>
+          <a-select-option value="女">女</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="年龄" name="age" :rules="[{ required: true, message: '請輸入您的年龄！' }]">
+        <a-input-number v-model:value="calorieData.age" :min="1" :max="120" />
+      </a-form-item>
+      <a-form-item label="身高 (cm)" name="height" :rules="[{ required: true, message: '請輸入您的身高！' }]">
+        <a-input-number v-model:value="calorieData.height" :min="1" :max="300" :step="0.1" />
+      </a-form-item>
+      <a-form-item label="当前体重 (kg)" name="current_weight" :rules="[{ required: true, message: '請輸入您的当前体重！' }]">
+        <a-input-number v-model:value="calorieData.current_weight" :min="1" :max="500" :step="0.1" />
+      </a-form-item>
+      <a-form-item label="目标体重 (kg)" name="target_weight" :rules="[{ required: true, message: '請輸入您的目标体重！' }]">
+        <a-input-number v-model:value="calorieData.target_weight" :min="1" :max="500" :step="0.1" />
+      </a-form-item>
+      <a-form-item label="活动水平" name="activity_level" :rules="[{ required: true, message: '請選擇您的活动水平！' }]">
+        <a-select v-model:value="calorieData.activity_level">
+          <a-select-option value="久坐">久坐不動（很少或沒有運動）</a-select-option>
+          <a-select-option value="轻度活动">輕度活動（輕鬆運動/運動1 - 3天/周）</a-select-option>
+          <a-select-option value="中度活动">中度活動（中等運動/運動3 - 5天/周）</a-select-option>
+          <a-select-option value="高度活动">高度活動（重度運動/運動6 - 7天/周）</a-select-option>
+          <a-select-option value="极度活动">極度活動（非常重度運動/體力勞動）</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="减重时间 (天)" name="timeframe" :rules="[{ required: true, message: '請輸入减重时间！' }]">
+        <a-input-number v-model:value="calorieData.timeframe" :min="1" :max="365" />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" html-type="submit">計算每日卡路里目标</a-button>
+      </a-form-item>
+    </a-form>
 
     <div v-if="calorieGoal !== null">
       <h3>每日卡路里目标: {{ calorieGoal }} 大卡</h3>
     </div>
 
     <!-- 卡路里攝入記錄 -->
-    <form @submit.prevent="recordCalorieIntake">
+    <a-form :model="intakeData" @finish="recordCalorieIntake" @finishFailed="onFinishFailed">
       <h3>記錄卡路里攝入</h3>
-      <div>
-        <label for="intake">卡路里攝入 (大卡):</label>
-        <input type="number" step="0.1" id="intake" v-model="intakeData.intake" required />
-      </div>
-      <div>
-        <label for="meal_time">用餐時間:</label>
-        <input type="text" id="meal_time" v-model="intakeData.meal_time" required />
-      </div>
-      <div>
-        <label for="food_item">食物項目:</label>
-        <input type="text" id="food_item" v-model="intakeData.food_item" required />
-      </div>
-      <button type="submit">記錄</button>
-    </form>
+      <a-form-item label="卡路里攝入 (大卡)" name="intake" :rules="[{ required: true, message: '請輸入卡路里攝入！' }]">
+        <a-input-number v-model:value="intakeData.intake" :min="0" :step="0.1" />
+      </a-form-item>
+      <a-form-item label="用餐時間" name="meal_time" :rules="[{ required: true, message: '請輸入用餐時間！' }]">
+        <a-input v-model:value="intakeData.meal_time" />
+      </a-form-item>
+      <a-form-item label="食物項目" name="food_item" :rules="[{ required: true, message: '請輸入食物項目！' }]">
+        <a-input v-model:value="intakeData.food_item" />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" html-type="submit">記錄</a-button>
+      </a-form-item>
+    </a-form>
 
     <!-- 體重記錄 -->
-    <form @submit.prevent="recordWeight">
+    <a-form :model="weightData" @finish="recordWeight" @finishFailed="onFinishFailed">
       <h3>記錄體重</h3>
-      <div>
-        <label for="weight">體重 (kg):</label>
-        <input type="number" step="0.1" id="weight" v-model="weightData.weight" required />
-      </div>
-      <div>
-        <label for="date">日期:</label>
-        <input type="date" id="date" v-model="weightData.date" required />
-      </div>
-      <button type="submit">記錄</button>
-    </form>
+      <a-form-item label="體重 (kg)" name="weight" :rules="[{ required: true, message: '請輸入體重！' }]">
+        <a-input-number v-model:value="weightData.weight" :min="0" :step="0.1" />
+      </a-form-item>
+      <a-form-item label="日期" name="date" :rules="[{ required: true, message: '請選擇日期！' }]">
+        <a-date-picker v-model:value="weightData.date" />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" html-type="submit">記錄</a-button>
+      </a-form-item>
+    </a-form>
 
     <!-- 科普欄 -->
     <section class="science-section">
@@ -91,6 +85,10 @@
         <li><strong>健康飲食:</strong> 建議飲食中包含均衡的蛋白質、碳水化合物和脂肪，並注重攝取維生素和礦物質。</li>
       </ul>
     </section>
+
+    <!-- 錯誤和成功消息 -->
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <p v-if="successMessage" class="success">{{ successMessage }}</p>
   </div>
 </template>
 
@@ -120,36 +118,60 @@ const weightData = ref({
 });
 
 const calorieGoal = ref(null);
+const errorMessage = ref('');
+const successMessage = ref('');
 
 const calculateCalorieGoal = async () => {
   try {
+    console.log('Sending data to backend:', calorieData.value);
     const response = await axios.post('http://localhost:5000/calorie/set_calorie_goal', calorieData.value, { withCredentials: true });
+    console.log('Response from backend:', response.data);
     calorieGoal.value = response.data.data.daily_calorie_goal;
-    alert(response.data.message);
+    successMessage.value = '卡路里目標計算成功！';
+    errorMessage.value = '';
   } catch (error) {
     console.error('Failed to set calorie goal:', error);
-    alert(error.response.data.message);
+    console.error('Error response data:', error.response?.data);
+    errorMessage.value = error.response?.data?.message || '計算卡路里目標失敗，請稍後再試。';
+    successMessage.value = '';
   }
 };
 
 const recordCalorieIntake = async () => {
   try {
     const response = await axios.post('http://localhost:5000/calorie/record_calorie_intake', intakeData.value, { withCredentials: true });
-    alert(response.data.message);
+    console.log('Calorie intake record response:', response.data);
+    successMessage.value = '卡路里攝入記錄成功！';
+    errorMessage.value = '';
   } catch (error) {
     console.error('Failed to record calorie intake:', error);
-    alert(error.response.data.message);
+    console.error('Error response data:', error.response?.data);
+    errorMessage.value = error.response?.data?.message || '記錄卡路里攝入失敗，請稍後再試。';
+    successMessage.value = '';
   }
 };
 
 const recordWeight = async () => {
   try {
-    const response = await axios.post('http://localhost:5000/calorie/record_weight', weightData.value, { withCredentials: true });
-    alert(response.data.message);
+    const formattedDate = weightData.value.date.format('YYYY-MM-DD');
+    const data = {
+      ...weightData.value,
+      date: formattedDate
+    };
+    const response = await axios.post('http://localhost:5000/calorie/record_weight', data, { withCredentials: true });
+    console.log('Weight record response:', response.data);
+    successMessage.value = '體重記錄成功！';
+    errorMessage.value = '';
   } catch (error) {
     console.error('Failed to record weight:', error);
-    alert(error.response.data.message);
+    console.error('Error response data:', error.response?.data);
+    errorMessage.value = error.response?.data?.message || '記錄體重失敗，請稍後再試。';
+    successMessage.value = '';
   }
+};
+
+const onFinishFailed = (errorInfo) => {
+  console.log('Failed:', errorInfo);
 };
 </script>
 
@@ -160,34 +182,12 @@ const recordWeight = async () => {
   padding: 20px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
+.error {
+  color: red;
 }
 
-form > div {
-  margin-bottom: 10px;
-}
-
-form label {
-  font-weight: bold;
-}
-
-form input, form select {
-  padding: 8px;
-  margin-top: 4px;
-}
-
-button {
-  padding: 10px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #369f79;
+.success {
+  color: green;
 }
 
 .science-section {
@@ -205,6 +205,7 @@ button:hover {
 
 .science-section ul {
   list-style: none;
+
   padding: 0;
 }
 
