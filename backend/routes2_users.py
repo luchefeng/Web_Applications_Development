@@ -59,6 +59,7 @@ def login():
 
     if user and user.check_password(password):
         session['user_id'] = user.id  # 使用 session 儲存用戶 ID
+        login_user(user)  # 使用 Flask-Login 進行用戶登錄
         return {'message': '登錄成功！'}, 200
     else:
         return {'message': '密碼錯誤，請重試。'}, 400
