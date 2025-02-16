@@ -6,12 +6,14 @@ db = SQLAlchemy()  # 创建SQLAlchemy实例
 
 class User(db.Model, UserMixin):
     '''用户模型'''
+    __tablename__ = 'user'  # 确保表名是user，而不是users
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主键，自動增長
     username = db.Column(db.String(255), unique=True, nullable=False)  # 用户名
     email = db.Column(db.String(255), unique=True, nullable=False)  # 邮箱
     password_hash = db.Column(db.String(255), nullable=False)  # 密码哈希
     calorie_goal = db.Column(db.Integer, default=2000)  # 卡路里目标
     profile = db.relationship('UserProfile', uselist=False, back_populates='user')  # 个人资料
+    ingredients = db.relationship('Ingredient', backref='user', lazy=True) # 食材管理
 
     def set_password(self, password):
         '''设置密码'''
@@ -79,3 +81,24 @@ class WeightRecord(db.Model):
     weight = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, nullable=False)
     __table_args__ = {'extend_existing': True}
+
+class Ingredient(db.Model):
+    __tablename__ = 'ingredients'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    shelf_life = db.Column(db.Integer, nullable=False)  # 保質期（天數）
+    quantity = db.Column(db.Float, nullable=False)  # 數量
+    unit_calories = db.Column(db.Float, nullable=False)  # 單位卡路里數目
+    purchase_date = db.Column(db.Date, nullable=False)  # 購買日期
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 更改這行，指向user表的id
+
+    def __init__(self, name, category, shelf_life, quantity, unit_calories, purchase_date, user_id):
+        self.name = name
+        self.category = category
+        self.shelf_life = shelf_life
+        self.quantity = quantity
+        self.unit_calories = unit_calories
+        self.purchase_date = purchase_date
+        self.user_id = user_id

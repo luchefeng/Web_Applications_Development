@@ -19,7 +19,7 @@
           </a-card>
         </a-col>
         <a-col :span="12">
-          <a-card hoverable>
+          <a-card hoverable @click="navigateTo('/ingredient-management')">
             <template #cover>
               <img alt="ingredient management" src="../assets/ingredient-management.jpg" />
             </template>

@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b44adcea-3dfb-47fb-9c5b-9fd0c4f7a52c" name="Changes" comment="2025.2.13 新增用户登录时的验证码功能">
+      <change afterPath="$PROJECT_DIR$/backend/routes2_ingredient.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_vue/src/views/Ingredient_Management.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/flask_session_cache/57ff07e655d3458f183fe347aeab96ff" beforeDir="false" afterPath="$PROJECT_DIR$/backend/flask_session_cache/57ff07e655d3458f183fe347aeab96ff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes2_calorie.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes2_calorie.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_vue/src/views/Calorie_Management.vue" beforeDir="false" afterPath="$PROJECT_DIR$/front_vue/src/views/Calorie_Management.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/flask_session_cache/2029240f6d1128be89ddc32729463129" beforeDir="false" afterPath="$PROJECT_DIR$/backend/flask_session_cache/2029240f6d1128be89ddc32729463129" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/models2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/models2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_vue/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_vue/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/front_vue/src/views/Dashboard.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
