@@ -1,7 +1,9 @@
 # Vue 3 + Vite
 
 前端技术栈 vue3 + vite(脚手架) + axios(连通前后端) + vue-router(前端路由) + vuex（状态管理）。
+
 直接使用了Ant Design Vue中的一些组件(https://www.antdv.com/docs/vue/introduce-cn) 。
+
 直接尝试连通前后端会失败，所以需要通过Flask-CORS解决跨端问题。 
 
 ## 目前实现的
