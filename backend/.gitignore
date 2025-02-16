@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+
+# 忽略 .idea 文件夾
+.idea/
+
+# 忽略 backend/flask_session_cache 文件夾
+backend/flask_session_cache/
