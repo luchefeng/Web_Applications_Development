@@ -1,49 +1,52 @@
 <template>
-  <a-form :model="formState" name="normal_login" class="login-form" @finish="onFinish" @finishFailed="onFinishFailed">
-    <a-form-item label="Username" name="username" :rules="[{ required: true, message: '請輸入您的用戶名！' }]">
-      <a-input v-model:value="formState.username">
-        <template #prefix>
-          <UserOutlined class="site-form-item-icon" />
-        </template>
-      </a-input>
-    </a-form-item>
-
-    <a-form-item label="Password" name="password" :rules="[{ required: true, message: '請輸入您的密碼！' }]">
-      <a-input-password v-model:value="formState.password">
-        <template #prefix>
-          <LockOutlined class="site-form-item-icon" />
-        </template>
-      </a-input-password>
-    </a-form-item>
-
-    <a-form-item label="Captcha">
-      <div style="display: flex; align-items: center;">
-        <img :src="captchaUrl" @click="fetchCaptcha" style="cursor: pointer; margin-right: 10px;">
-        <a-input v-model:value="formState.captcha" placeholder="Enter captcha">
+  <div class="login-container">
+    <h1 class="login-title">Login</h1>
+    <a-form :model="formState" name="normal_login" class="login-form" @finish="onFinish" @finishFailed="onFinishFailed">
+      <a-form-item label="Username" name="username" :rules="[{ required: true, message: '請輸入您的用戶名！' }]">
+        <a-input v-model:value="formState.username">
           <template #prefix>
-            <SafetyOutlined class="site-form-item-icon" />
+            <UserOutlined class="site-form-item-icon" />
           </template>
         </a-input>
-      </div>
-    </a-form-item>
-
-    <a-form-item>
-      <a-form-item name="remember" no-style>
-        <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
       </a-form-item>
-      <a class="login-form-forgot" href="">Forgot password</a>
-    </a-form-item>
 
-    <a-form-item>
-      <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
-        Log in
-      </a-button>
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <p v-if="successMessage" class="success">{{ successMessage }}</p>
-      Or
-      <router-link to="/register">Register</router-link>
-    </a-form-item>
-  </a-form>
+      <a-form-item label="Password" name="password" :rules="[{ required: true, message: '請輸入您的密碼！' }]">
+        <a-input-password v-model:value="formState.password">
+          <template #prefix>
+            <LockOutlined class="site-form-item-icon" />
+          </template>
+        </a-input-password>
+      </a-form-item>
+
+      <a-form-item label="Captcha">
+        <div style="display: flex; align-items: center;">
+          <img :src="captchaUrl" @click="fetchCaptcha" style="cursor: pointer; margin-right: 10px;">
+          <a-input v-model:value="formState.captcha" placeholder="Enter captcha">
+            <template #prefix>
+              <SafetyOutlined class="site-form-item-icon" />
+            </template>
+          </a-input>
+        </div>
+      </a-form-item>
+
+      <a-form-item>
+        <a-form-item name="remember" no-style>
+          <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+        </a-form-item>
+        <a class="login-form-forgot" href="">Forgot password</a>
+      </a-form-item>
+
+      <a-form-item>
+        <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+          Log in
+        </a-button>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="success">{{ successMessage }}</p>
+        Or
+        <router-link to="/register">Register</router-link>
+      </a-form-item>
+    </a-form>
+  </div>
 </template>
 
 <script setup>
@@ -136,18 +139,41 @@ const disabled = computed(() => {
 </script>
 
 <style scoped>
-.login-form {
-  max-width: 300px;
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f2f5;
 }
+
+.login-title {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.login-form {
+  width: 400px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .login-form-forgot {
   float: right;
 }
+
 .login-form-button {
   width: 100%;
 }
+
 .error {
   color: red;
 }
+
 .success {
   color: green;
 }
