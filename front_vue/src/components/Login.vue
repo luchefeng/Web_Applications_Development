@@ -99,9 +99,15 @@ const onFinish = async () => {
     errorMessage.value = '';
     successMessage.value = '登錄成功！';
 
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 2000);
+    // 存储登录状态
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    // 立即跳转到仪表板，使用新布局
+    router.push({
+      path: '/dashboard',
+      query: { layout: 'calorie' }
+    });
+
   } catch (error) {
     console.error('Login failed:', error);
 

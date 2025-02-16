@@ -15,12 +15,20 @@
               <a-col flex="1"></a-col>
               <a-col flex="1">
                 <nav class="right-nav">
-                  <a-button type="primary">
-                    <router-link to="/register">Register</router-link>
-                  </a-button>
-                  <a-button type="primary" color="">
-                    <router-link to="/login">Login</router-link>
-                  </a-button>                  
+                  <template v-if="isLoggedIn">
+                    <a-avatar :size="32" icon="user" />
+                    <a-button type="primary" @click="handleLogout">
+                      Logout
+                    </a-button>
+                  </template>
+                  <template v-else>
+                    <a-button type="primary">
+                      <router-link to="/register">Register</router-link>
+                    </a-button>
+                    <a-button type="primary">
+                      <router-link to="/login">Login</router-link>
+                    </a-button>
+                  </template>
                 </nav>
               </a-col>
             </a-row>            
@@ -36,7 +44,26 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const isLoggedIn = ref(false);
+
+onMounted(() => {
+  isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
+});
+
+const handleLogout = async () => {
+  try {
+    await axios.post('http://localhost:5000/users/logout', {}, { withCredentials: true });
+    localStorage.removeItem('isLoggedIn');
+    router.push('/login');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
 </script>
 
 <style scoped>

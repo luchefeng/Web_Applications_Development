@@ -15,12 +15,10 @@
             <a-col flex="1"></a-col>
             <a-col flex="1">
               <nav class="right-nav">
-                <a-button type="primary">
-                  <router-link to="/register">Register</router-link>
+                <a-avatar :size="32" icon="user" />
+                <a-button type="primary" @click="handleLogout">
+                  Logout
                 </a-button>
-                <a-button type="primary" color="">
-                  <router-link to="/login">Login</router-link>
-                </a-button>                  
               </nav>
             </a-col>
           </a-row>            
@@ -36,7 +34,28 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { UserOutlined } from '@ant-design/icons-vue';
+
+const router = useRouter();
+
+const handleLogout = async () => {
+  try {
+    await axios.post('http://localhost:5000/users/logout', {}, { withCredentials: true });
+    // 先清除登录状态
+    localStorage.removeItem('isLoggedIn');
+    // 等待一个微任务周期，确保状态更新
+    await Promise.resolve();
+    // 然后进行路由跳转
+    await router.push('/');
+    // 强制重新加载组件
+    window.location.reload();
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
 </script>
 
 <style scoped>

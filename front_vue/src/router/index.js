@@ -42,4 +42,21 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach(async (to, from, next) => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  
+  // 需要登录的路由
+  const requiresAuth = ['/dashboard', '/calorie-management', '/profile'];
+  
+  if (requiresAuth.includes(to.path) && !isLoggedIn) {
+    next('/login');
+  } else if (!isLoggedIn && from.path === '/dashboard') {
+    // 确保状态更新后再跳转
+    await Promise.resolve();
+    next('/');
+  } else {
+    next();
+  }
+});
+
 export default router;
