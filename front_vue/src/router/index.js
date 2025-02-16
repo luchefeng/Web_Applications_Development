@@ -3,7 +3,6 @@ import Home from '@/views/Home.vue';
 import Start from '@/views/Start.vue';
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
-import RegisterP from '@/views/RegisterP.vue';
 import Profile from '@/views/Profile.vue';
 import Recipes from '@/views/Recipes.vue';
 import Articles from '@/views/Articles.vue';
