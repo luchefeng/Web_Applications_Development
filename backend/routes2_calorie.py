@@ -107,3 +107,52 @@ def record_weight():
     except Exception as e:
         print('Error in record_weight:', traceback.format_exc())
         return jsonify({'message': '記錄體重失敗，請稍後再試。'}), 500
+
+@calorie_bp.route('/calculate', methods=['POST'])
+@login_required
+def calculate_calories():
+    try:
+        data = request.json
+        food_name = data.get('food_name')
+        food_quantity = float(data.get('food_quantity'))
+        meal_type = data.get('meal_type')
+
+        # 根據食物名稱和數量計算卡路里
+        calories = calculate_food_calories(food_name, food_quantity)
+
+        # 根據計算出的卡路里範圍推薦簡單的菜譜
+        recommended_recipes = recommend_recipes(calories, meal_type)
+
+        return jsonify({'calories': calories, 'recommended_recipes': recommended_recipes}), 200
+    except Exception as e:
+        print('Error in calculate_calories:', traceback.format_exc())
+        return jsonify({'message': '卡路里計算失敗，請稍後再試。'}), 500
+
+
+def calculate_food_calories(food_name, food_quantity):
+    # 這裡應該實現根據食物名稱和數量計算卡路里的邏輯
+    # 例如從數據庫查詢或使用預定的數據
+    calories_per_gram = {
+        '蘋果': 0.52,  # 每克0.52卡路里
+        '香蕉': 0.89,  # 每克0.89卡路里
+        # 添加更多食物及其卡路里數據
+    }
+    return calories_per_gram.get(food_name, 0) * food_quantity
+
+
+def recommend_recipes(calories, meal_type):
+    # 這裡應該實現根據卡路里範圍和餐別推薦菜譜的邏輯
+    # 例如從數據庫查詢或使用預定的菜譜數據
+    recipes = [
+        {'id': 1, 'name': '簡單蘋果沙拉'},
+        {'id': 2, 'name': '香蕉燕麥粥'},
+        # 添加更多簡單的菜譜
+    ]
+    # 篩選符合卡路里範圍和餐別的菜譜
+    recommended_recipes = [recipe for recipe in recipes if recipe_fits_criteria(recipe, calories, meal_type)]
+    return recommended_recipes
+
+
+def recipe_fits_criteria(recipe, calories, meal_type):
+    # 實現判斷菜譜是否符合卡路里範圍和餐別的邏輯
+    return True  # 示例中所有菜譜都符合
