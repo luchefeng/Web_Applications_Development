@@ -3,31 +3,38 @@ import Home from '@/views/Home.vue';
 import Start from '@/views/Start.vue';
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
+import RegisterP from '@/views/RegisterP.vue';
 import Profile from '@/views/Profile.vue';
 import Recipes from '@/views/Recipes.vue';
 import Articles from '@/views/Articles.vue';
 import Home_link from '@/views/Home_link.vue';
-import Dashboard from '@/views/Dashboard.vue'; // 导入 Dashboard 组件
-import CalorieManagement from '@/views/Calorie_Management.vue'; // 新增，导入 CalorieManagement 组件
+import Dashboard from '@/views/Dashboard.vue';
+import CalorieManagement from '@/views/Calorie_Management.vue';
+import IngredientManagement from '@/views/Ingredient_Management.vue'; // 新增，導入 IngredientManagement 組件
 
 const routes = [
   { path: '/', component: Start },
   { path: '/home_link', component: Home_link },
   { path: '/start', component: Start },
   { path: '/login', component: Login },
-  { path: '/register', component: Register }, // 更改为 RegisterP 组件
+  { path: '/register', component: Register },
   { path: '/profile', component: Profile },
   { path: '/recipes', component: Recipes },
   { path: '/articles', component: Articles },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: Dashboard // 使用导入的 Dashboard 组件
+    component: Dashboard
   },
   {
-    path: '/calorie-management', // 新增的路由路径
+    path: '/calorie-management',
     name: 'CalorieManagement',
-    component: CalorieManagement // 使用导入的 CalorieManagement 组件
+    component: CalorieManagement
+  },
+  {
+    path: '/ingredient-management', // 新增的路由路徑
+    name: 'IngredientManagement',
+    component: IngredientManagement // 使用導入的 IngredientManagement 組件
   },
 ];
 

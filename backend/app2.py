@@ -3,6 +3,7 @@ from models2 import db, User, Recipes, Article
 from routes2_users import users_bp
 from routes2_recipes import recipes_bp
 from routes2_calorie import calorie_bp
+from routes2_ingredient import ingredient_bp
 from dotenv import load_dotenv
 from flask_login import LoginManager
 from flask_cors import CORS
@@ -33,6 +34,7 @@ db.init_app(app)  # 初始化数据库
 app.register_blueprint(users_bp, url_prefix='/users')  # 注册用戶蓝图
 app.register_blueprint(recipes_bp, url_prefix='/recipes')  # 注册食谱蓝图
 app.register_blueprint(calorie_bp, url_prefix='/calorie') # 注册卡路里蓝图
+app.register_blueprint(ingredient_bp, url_prefix='/ingredient') # 注册食材管理蓝图
 
 login_manager = LoginManager()  # 初始化 LoginManager
 login_manager.init_app(app)  # 將其綁定到 Flask 應用
