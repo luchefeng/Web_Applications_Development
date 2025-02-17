@@ -53,8 +53,10 @@
 import { reactive, ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const router = useRouter();
+const store = useStore();
 
 const formState = reactive({
   username: '',
@@ -78,9 +80,7 @@ const onFinish = async () => {
     // 先驗證驗證碼
     const captchaResponse = await axios.post('http://localhost:5000/users/verify-captcha', {
       captcha: formState.captcha,
-    }, {
-      withCredentials: true
-    });
+    }, { withCredentials: true });
 
     if (captchaResponse.data.message !== '驗證碼正確！') {
       throw new Error('Captcha validation failed');
@@ -91,9 +91,7 @@ const onFinish = async () => {
       username: formState.username,
       password: formState.password,
       captcha: formState.captcha,
-    }, {
-      withCredentials: true
-    });
+    }, { withCredentials: true });
 
     console.log('Login successful:', response.data);
     errorMessage.value = '';
@@ -101,12 +99,12 @@ const onFinish = async () => {
 
     // 存储登录状态
     localStorage.setItem('isLoggedIn', 'true');
-    
+
+    // 更新 Vuex 中的登錄狀態
+    store.commit('setLoggedIn', true);
+
     // 立即跳转到仪表板，使用新布局
-    router.push({
-      path: '/dashboard',
-      query: { layout: 'calorie' }
-    });
+    router.push({ path: '/dashboard', query: { layout: 'calorie' } });
 
   } catch (error) {
     console.error('Login failed:', error);

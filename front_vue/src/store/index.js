@@ -5,6 +5,7 @@ export default createStore({
     user: null,
     recipes: [],
     articles: [],
+    isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
   },
   mutations: {
     setUser(state, user) {
@@ -15,6 +16,10 @@ export default createStore({
     },
     setArticles(state, articles) {
       state.articles = articles;
+    },
+    setLoggedIn(state, value) {
+      state.isLoggedIn = value;
+      localStorage.setItem('isLoggedIn', value ? 'true' : 'false');
     },
   },
   actions: {

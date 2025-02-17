@@ -67,17 +67,18 @@ def login():
 @users_bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
+    print('Logout request received.')  # 添加日誌
     session.pop('_flashes', None)  # 清除之前的 flash 消息
     logout_user()
-    flash('您已登出。')
-    return redirect(url_for('users.index'))
+    print('User logged out.')  # 添加日誌
+    return jsonify({'message': '您已成功登出。'}), 200
 
-@users_bp.route('/dashboard')
+@users_bp.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard():
-    return render_template('users/dashboard.html', user=current_user)
+    return jsonify({'message': '歡迎來到儀表板！', 'user': {'username': current_user.username, 'email': current_user.email}}), 200
 
-@users_bp.route('/user-info')
+@users_bp.route('/user-info', methods=['GET'])
 @login_required
 def user_info():
     user_id = session.get('user_id')
@@ -85,7 +86,7 @@ def user_info():
     return {
         'username': user.username,
         'email': user.email
-    }
+    }, 200
 
 @users_bp.route('/delete_account/<int:id>', methods=['POST'])
 @login_required
@@ -94,21 +95,19 @@ def delete_account(id):
     if user_to_delete and user_to_delete.id == current_user.id:
         db.session.delete(user_to_delete)
         db.session.commit()
-        flash('用戶已成功註銷', 'success')
+        return jsonify({'message': '用戶已成功註銷'}), 200
     else:
-        flash('未找到該用戶或沒有權限', 'error')
-    return redirect(url_for('users.index'))
+        return jsonify({'message': '未找到該用戶或沒有權限'}), 404
 
 @users_bp.route('/reset_password', methods=['POST'])
 def reset_password():
-    email = request.form['email']
+    email = request.json.get('email')
     user = User.query.filter_by(email=email).first()
-
     if user:
-        flash('重置密碼的鏈接已發送至您的郵箱。')
+        # 假設這裡有一個發送郵件的邏輯
+        return jsonify({'message': '重置密碼的鏈接已發送至您的郵箱。'}), 200
     else:
-        flash('該電子郵件未註冊。')
-    return redirect(url_for('users.index'))
+        return jsonify({'message': '該電子郵件未註冊。'}), 404
 
 @users_bp.route('/generate-captcha', methods=['GET'])
 def generate_captcha():

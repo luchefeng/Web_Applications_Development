@@ -75,7 +75,7 @@ const addIngredient = async () => {
       ...ingredientData.value,
       purchase_date: ingredientData.value.purchase_date.format('YYYY-MM-DD')
     };
-    await axios.post('http://localhost:5000/ingredient/add', data);
+    await axios.post('http://localhost:5000/ingredient/add', data, { withCredentials: true });
     successMessage.value = '食材添加成功！';
     errorMessage.value = '';
     fetchIngredients();
