@@ -43,17 +43,39 @@ const router = useRouter();
 
 const handleLogout = async () => {
   try {
-    await axios.post('http://localhost:5000/users/logout', {}, { withCredentials: true });
-    // 先清除登录状态
-    localStorage.removeItem('isLoggedIn');
-    // 等待一个微任务周期，确保状态更新
-    await Promise.resolve();
-    // 然后进行路由跳转
-    await router.push('/');
-    // 强制重新加载组件
-    window.location.reload();
+    console.log('Sending logout request...');
+    const response = await axios.post('http://localhost:5000/users/logout', {}, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 5000 // 添加超时设置
+    });
+
+    if (response.status === 200) {
+      // 清除本地存储
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('user');
+      
+      // 更新 store
+      store.dispatch('logout');
+      
+      // 等待状态更新
+      await Promise.resolve();
+      
+      // 跳转到首页
+      await router.push('/');
+      
+      // 重新加载页面以确保状态完全重置
+      window.location.reload();
+    }
   } catch (error) {
-    console.error('Logout failed:', error);
+    console.error('Logout error:', error);
+    // 即使请求失败也清除本地状态
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+    store.dispatch('logout');
+    router.push('/');
   }
 };
 </script>

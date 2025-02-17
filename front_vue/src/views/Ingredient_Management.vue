@@ -1,104 +1,40 @@
 <template>
   <div class="ingredient-management">
-    <h2>食品櫃管理</h2>
-    <a-form :model="ingredientData" @finish="addIngredient" @finishFailed="onFinishFailed">
-      <a-form-item label="食物名稱" name="name" :rules="[{ required: true, message: '請輸入食物名稱！' }]">
-        <a-input v-model:value="ingredientData.name" />
-      </a-form-item>
-      <a-form-item label="類別" name="category" :rules="[{ required: true, message: '請選擇類別！' }]">
-        <a-select v-model:value="ingredientData.category">
-          <a-select-option value="蔬菜">蔬菜</a-select-option>
-          <a-select-option value="肉類">肉類</a-select-option>
-          <a-select-option value="調料">調料</a-select-option>
-          <a-select-option value="其他">其他</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="保質期 (天)" name="shelf_life" :rules="[{ required: true, message: '請輸入保質期！' }]">
-        <a-input-number v-model:value="ingredientData.shelf_life" :min="1" />
-      </a-form-item>
-      <a-form-item label="食物數量" name="quantity" :rules="[{ required: true, message: '請輸入食物數量！' }]">
-        <a-input v-model:value="ingredientData.quantity" placeholder="例：1顆, 100g" />
-      </a-form-item>
-      <a-form-item label="單位卡路里數目" name="unit_calories" :rules="[{ required: true, message: '請輸入單位卡路里數目！' }]">
-        <a-input-number v-model:value="ingredientData.unit_calories" :min="0" />
-      </a-form-item>
-      <a-form-item label="購買日期" name="purchase_date" :rules="[{ required: true, message: '請選擇購買日期！' }]">
-        <a-date-picker v-model:value="ingredientData.purchase_date" />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">添加食材</a-button>
-      </a-form-item>
-    </a-form>
-    <div v-if="ingredients.length">
-      <h3>食品櫃列表</h3>
-      <ul>
-        <li v-for="ingredient in ingredients" :key="ingredient.id">
-          {{ ingredient.name }} - {{ ingredient.category }} - {{ ingredient.quantity }}
-        </li>
-      </ul>
-    </div>
-    <!-- 顯示錯誤和成功消息 -->
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-    <p v-if="successMessage" class="success">{{ successMessage }}</p>
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="1" tab="食品柜">
+        <ingredient-show ref="ingredientShowRef" />
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="添加食材">
+        <ingredient-add @ingredient-added="handleIngredientAdded" />
+      </a-tab-pane>
+      <a-tab-pane key="3" tab="推荐菜谱">
+        <ingredient-recommend-recipes />
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref } from 'vue';
+import IngredientShow from '../components/Ingredient_Show.vue';
+import IngredientAdd from '../components/Ingredient_Add.vue';
+import IngredientRecommendRecipes from '../components/Ingredient_RecomendRecipes.vue';
 
-const ingredientData = ref({
-  name: '',
-  category: '',
-  shelf_life: null,
-  quantity: '',
-  unit_calories: null,
-  purchase_date: null
-});
+const activeKey = ref('1');
+const ingredientShowRef = ref(null);
 
-const ingredients = ref([]);
-const successMessage = ref('');
-const errorMessage = ref('');
-
-const fetchIngredients = async () => {
-  try {
-    const response = await axios.get('http://localhost:5000/ingredient/get_all');
-    ingredients.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch ingredients:', error);
-  }
+const handleIngredientAdded = () => {
+  // 刷新食品柜列表
+  ingredientShowRef.value?.refreshList();
+  // 切换到食品柜标签
+  activeKey.value = '1';
 };
-
-const addIngredient = async () => {
-  try {
-    const data = {
-      ...ingredientData.value,
-      purchase_date: ingredientData.value.purchase_date.format('YYYY-MM-DD')
-    };
-    await axios.post('http://localhost:5000/ingredient/add', data, { withCredentials: true });
-    successMessage.value = '食材添加成功！';
-    errorMessage.value = '';
-    fetchIngredients();
-  } catch (error) {
-    console.error('Failed to add ingredient:', error);
-    errorMessage.value = '食材添加失敗，請稍後再試。';
-    successMessage.value = '';
-  }
-};
-
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-
-onMounted(() => {
-  fetchIngredients();
-});
 </script>
 
 <style scoped>
 .ingredient-management {
-  max-width: 600px;
-  margin: auto;
+  max-width: 1200px;
+  margin: 20px auto;
   padding: 20px;
 }
 

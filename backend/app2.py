@@ -14,7 +14,14 @@ from flask_migrate import Migrate  # 確保 Flask-Migrate 已導入
 load_dotenv()  # 加载.env文件
 
 app = Flask(__name__)  # 创建Flask应用
-CORS(app, supports_credentials=True)  # 配置 CORS
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173"],  # 前端开发服务器地址
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True
+    }
+})
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')  # 配置MySQL数据库
