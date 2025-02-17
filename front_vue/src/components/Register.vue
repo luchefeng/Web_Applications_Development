@@ -1,102 +1,98 @@
 <template>
   <div class="register-container">
-    <h1 class="register-title">Register</h1>
-    <!-- 表单组件 -->
-    <a-form
-      :model="formState"
-      v-bind="layout"
-      name="nest-messages"
-      :validate-messages="validateMessages"
-      @finish="onFinish"
-      class="register-form"
-    >
-      <!-- 用户名输入框 -->
-      <a-form-item :name="['user', 'name']" label="Name" :rules="[{ required: true }]">
-        <a-input v-model:value="formState.user.name" />
+    <h1 class="register-title">注册</h1>
+    <a-form :model="formState" name="normal_register" class="register-form" @finish="onFinish" @finishFailed="onFinishFailed">
+      <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入您的用户名！' }]">
+        <a-input v-model:value="formState.username">
+          <template #prefix>
+            <UserOutlined class="site-form-item-icon" />
+          </template>
+        </a-input>
       </a-form-item>
-      <!-- 电子邮件输入框 -->
-      <a-form-item :name="['user', 'email']" label="Email" :rules="[{ type: 'email',required: true }]">
-        <a-input v-model:value="formState.user.email" />
+
+      <a-form-item label="邮箱" name="email" :rules="[{ required: true, message: '请输入您的邮箱！' }]">
+        <a-input v-model:value="formState.email">
+          <template #prefix>
+            <MailOutlined class="site-form-item-icon" />
+          </template>
+        </a-input>
       </a-form-item>
-      <!-- 密码输入框 -->
-      <a-form-item :name="['user', 'password']" label="password" :rules="[{ required: true }]">
-        <a-input-password v-model:value="formState.user.password" />
+
+      <a-form-item label="密码" name="password" :rules="[{ required: true, message: '请输入您的密码！' }]">
+        <a-input-password v-model:value="formState.password">
+          <template #prefix>
+            <LockOutlined class="site-form-item-icon" />
+          </template>
+        </a-input-password>
       </a-form-item>
-      <!-- 卡路里目标输入框 -->
-      <a-form-item :name="['user', 'calorie goal']" label="calorie goal" :rules="[{ type: 'number', min: 0, max: 10000 }]">
-        <a-input-number v-model:value="formState.user.calorie_goal" />
+
+      <a-form-item label="是否选择卡路里管理版本" name="calorieVersion">
+        <a-checkbox v-model:checked="formState.calorieVersion" :disabled="true">
+          {{ formState.calorieVersion ? '已选择卡路里管理版' : '未选择卡路里管理版' }}
+        </a-checkbox>
       </a-form-item>
-      <!-- 介绍输入框 -->
-      <a-form-item :name="['user', 'introduction']" label="Introduction">
-        <a-textarea v-model:value="formState.user.introduction" />
-      </a-form-item>
-      <!-- 提交按钮 -->
-      <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
-        <a-button type="primary" html-type="submit">Submit</a-button>
+
+      <a-form-item>
+        <a-button :disabled="disabled" type="primary" html-type="submit" class="register-form-button">
+          注册
+        </a-button>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="success">{{ successMessage }}</p>
+        已有账号？
+        <router-link to="/login">登录</router-link>
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'; // 导入 reactive 函数，用于创建响应式状态
-import axios from 'axios'; // 导入 axios 库，用于发送 HTTP 请求
-import { useRouter } from 'vue-router'; // 导入 useRouter 函数，用于页面跳转
+import { reactive, ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter, useRoute } from 'vue-router';
+import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons-vue';
 
-// 表单布局配置
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
+const router = useRouter();
+const route = useRoute();
 
-// 表单验证消息配置
-const validateMessages = {
-  required: '${label} is required!',
-  types: {
-    email: '${label} is not a valid email!',
-    number: '${label} is not a valid number!',
-  },
-  number: {
-    range: '${label} must be between ${min} and ${max}',
-  },
-};
-
-// 表单状态，使用 reactive 创建响应式对象
 const formState = reactive({
-  user: {
-    name: '',
-    calorie_goal: '',
-    email: '',
-    password: '',
-    introduction: '',
-  },
+  username: '',
+  email: '',
+  password: '',
+  calorieVersion: route.query.version === 'calorie',
 });
 
-// 使用 Vue Router 进行页面跳转
-const router = useRouter();
+const errorMessage = ref('');
+const successMessage = ref('');
 
-// 表单提交处理函数
 const onFinish = async () => {
   try {
-    // 发送 POST 请求到后端注册 API
     const response = await axios.post('http://localhost:5000/users/register', {
-      username: formState.user.name,
-      email: formState.user.email,
-      password: formState.user.password,
-      calorie_goal: formState.user.calorie_goal,
-      introduction: formState.user.introduction,
+      username: formState.username,
+      email: formState.email,
+      password: formState.password,
+      calorieVersion: formState.calorieVersion,
     });
-    console.log('Registration successful:', response.data);
-    // 注册成功后跳转到登录页面
+
+    console.log('注册成功:', response.data);
+    errorMessage.value = '';
+    successMessage.value = '注册成功！请登录。';
+
+    // 跳转到登录页面
     router.push('/login');
   } catch (error) {
-    console.error('Registration failed:', error);
+    console.error('注册失败:', error);
+    errorMessage.value = error.response?.data?.message || '注册失败，请重试。';
+    successMessage.value = '';
   }
 };
+
+const onFinishFailed = errorInfo => {
+  console.log('Failed:', errorInfo);
+};
+
+const disabled = computed(() => {
+  return !(formState.username && formState.email && formState.password);
+});
 </script>
 
 <style scoped>
@@ -121,5 +117,17 @@ const onFinish = async () => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.register-form-button {
+  width: 100%;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
 }
 </style>

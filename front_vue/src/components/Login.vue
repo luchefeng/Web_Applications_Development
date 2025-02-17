@@ -77,58 +77,45 @@ onMounted(fetchCaptcha);
 
 const onFinish = async () => {
   try {
-    // 先驗證驗證碼
+    // 先验证验证码
     const captchaResponse = await axios.post('http://localhost:5000/users/verify-captcha', {
       captcha: formState.captcha,
     }, { withCredentials: true });
 
-    if (captchaResponse.data.message !== '驗證碼正確！') {
+    if (captchaResponse.data.message !== '验证码正确！') {
       throw new Error('Captcha validation failed');
     }
 
-    // 驗證碼正確後，調用登錄
+    // 验证码正确后，调用登录
     const response = await axios.post('http://localhost:5000/users/login', {
       username: formState.username,
       password: formState.password,
       captcha: formState.captcha,
     }, { withCredentials: true });
 
-    console.log('Login successful:', response.data);
+    console.log('登录成功:', response.data);
     errorMessage.value = '';
-    successMessage.value = '登錄成功！';
+    successMessage.value = '登录成功！';
 
     // 存储登录状态
     localStorage.setItem('isLoggedIn', 'true');
 
-    // 更新 Vuex 中的登錄狀態
+    // 更新 Vuex 中的登录状态
     store.commit('setLoggedIn', true);
 
-    // 立即跳转到仪表板，使用新布局
-    router.push({ path: '/dashboard', query: { layout: 'calorie' } });
+    // 根据用户选择的版本跳转到不同的仪表盘
+    const userInfoResponse = await axios.get('http://localhost:5000/users/user-info', { withCredentials: true });
+    const user = userInfoResponse.data;
+
+    if (user.calorieVersion) {
+      router.push({ path: '/dashboard-calorie' });
+    } else {
+      router.push({ path: '/dashboard-cook' });
+    }
 
   } catch (error) {
-    console.error('Login failed:', error);
-
-    if (error.response) {
-      switch (error.response.status) {
-        case 400:
-          errorMessage.value = '錯誤請求：請檢查您的輸入。';
-          break;
-        case 401:
-          errorMessage.value = '未授權：無效的用戶名或密碼。';
-          break;
-        case 404:
-          errorMessage.value = '未找到：請求的資源未找到。';
-          break;
-        case 500:
-          errorMessage.value = '內部服務器錯誤：請稍後再試。';
-          break;
-        default:
-          errorMessage.value = `錯誤：${error.response.statusText}`;
-      }
-    } else {
-      errorMessage.value = '網絡錯誤：請檢查您的網絡連接。';
-    }
+    console.error('登录失败:', error);
+    errorMessage.value = error.response?.data?.message || '登录失败，请重试。';
     successMessage.value = '';
   }
 };

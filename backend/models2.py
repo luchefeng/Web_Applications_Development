@@ -5,23 +5,15 @@ from flask_login import UserMixin
 db = SQLAlchemy()  # 创建SQLAlchemy实例
 
 class User(db.Model, UserMixin):
-    '''用户模型'''
-    __tablename__ = 'user'  # 确保表名是user，而不是users
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 主键，自動增長
-    username = db.Column(db.String(255), unique=True, nullable=False)  # 用户名
-    email = db.Column(db.String(255), unique=True, nullable=False)  # 邮箱
-    password_hash = db.Column(db.String(255), nullable=False)  # 密码哈希
-    calorie_goal = db.Column(db.Integer, default=2000)  # 卡路里目标
-    profile = db.relationship('UserProfile', uselist=False, back_populates='user')  # 个人资料
-    ingredients = db.relationship('Ingredient', backref='user', lazy=True) # 食材管理
-
-    def set_password(self, password):
-        '''设置密码'''
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        '''检查密码'''
-        return check_password_hash(self.password_hash, password)
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    calorie_version = db.Column(db.Boolean, default=False)  # 新增字段
+    calorie_goal = db.Column(db.Integer, default=2000)
+    profile = db.relationship('UserProfile', uselist=False, back_populates='user')
+    ingredients = db.relationship('Ingredient', backref='user', lazy=True)
 
 class UserProfile(db.Model):
     '''用户资料模型'''

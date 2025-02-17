@@ -10,6 +10,8 @@ import Home_link from '@/views/Home_link.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import CalorieManagement from '@/views/Calorie_Management.vue';
 import IngredientManagement from '@/views/Ingredient_Management.vue'; // 新增，導入 IngredientManagement 組件
+import DashboardCalorie from '@/layouts/BasicLayout_calorie.vue';
+import DashboardCook from '@/layouts/BasicLayout_cook.vue';
 
 const routes = [
   { path: '/', component: Start },
@@ -34,6 +36,16 @@ const routes = [
     path: '/ingredient-management', // 新增的路由路徑
     name: 'IngredientManagement',
     component: IngredientManagement // 使用導入的 IngredientManagement 組件
+  },
+  {
+    path: '/dashboard-calorie',
+    component: DashboardCalorie,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard-cook',
+    component: DashboardCook,
+    meta: { requiresAuth: true }
   },
 ];
 

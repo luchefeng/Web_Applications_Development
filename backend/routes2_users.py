@@ -23,23 +23,24 @@ def register():
         username = request.json.get('username')
         email = request.json.get('email')
         password = request.json.get('password')
+        calorie_version = request.json.get('calorieVersion', False)  # 获取是否选择卡路里管理版本
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
         if not email:
-            return {'message': '電子郵件不能為空'}, 400
+            return {'message': '电子邮件不能为空'}, 400
 
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
-            return {'message': '用戶名或郵箱已存在，請選擇其他的'}, 400
+            return {'message': '用户名或邮箱已存在，请选择其他的'}, 400
 
         try:
-            new_user = User(username=username, email=email, password_hash=hashed_password)
+            new_user = User(username=username, email=email, password_hash=hashed_password, calorie_version=calorie_version)
             db.session.add(new_user)
             db.session.commit()
-            return {'message': '註冊成功！請登錄。'}, 201
+            return {'message': '注册成功！请登录。'}, 201
         except:
             db.session.rollback()
-            return {'message': '註冊失敗，請重試。'}, 500
+            return {'message': '注册失败，请重试。'}, 500
 
 @users_bp.route('/login', methods=['POST'])
 def login():

@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask_cors import CORS
 import os
 from flask_session import Session  # 用於設置驗證碼
+from flask_migrate import Migrate  # 確保 Flask-Migrate 已導入
 
 load_dotenv()  # 加载.env文件
 
@@ -31,6 +32,8 @@ Session(app)
 
 db.init_app(app)  # 初始化数据库
 
+migrate = Migrate(app, db)  # 初始化 Flask-Migrate
+
 app.register_blueprint(users_bp, url_prefix='/users')  # 注册用戶蓝图
 app.register_blueprint(recipes_bp, url_prefix='/recipes')  # 注册食谱蓝图
 app.register_blueprint(calorie_bp, url_prefix='/calorie') # 注册卡路里蓝图
@@ -48,4 +51,4 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 if __name__ == '__main__':
-    app.run(debug=True)  # 运行应用
+    app.run(debug=True)
