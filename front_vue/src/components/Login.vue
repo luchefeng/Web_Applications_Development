@@ -82,7 +82,7 @@ const onFinish = async () => {
       captcha: formState.captcha,
     }, { withCredentials: true });
 
-    if (captchaResponse.data.message !== '验证码正确！') {
+    if (captchaResponse.data.message !== '驗證碼正確！') {
       throw new Error('Captcha validation failed');
     }
 
@@ -94,8 +94,8 @@ const onFinish = async () => {
     }, { withCredentials: true });
 
     console.log('登录成功:', response.data);
-    errorMessage.value = '';
-    successMessage.value = '登录成功！';
+    errorMessage.value = '';  // 清除错误消息
+    successMessage.value = '登录成功！';  // 显示成功消息
 
     // 存储登录状态
     localStorage.setItem('isLoggedIn', 'true');
@@ -115,8 +115,9 @@ const onFinish = async () => {
 
   } catch (error) {
     console.error('登录失败:', error);
+    // 错误提示信息
     errorMessage.value = error.response?.data?.message || '登录失败，请重试。';
-    successMessage.value = '';
+    successMessage.value = '';  // 清除成功消息
   }
 };
 

@@ -51,19 +51,20 @@ def login():
     print(f"Session ID: {session.sid}, CAPTCHA in session: {session.get('captcha')}")  # 添加日誌
 
     if 'captcha' not in session or session['captcha'] != captcha:
-        return {'message': '驗證碼錯誤！'}, 400
+        return {'message': '验证码错误！'}, 400
 
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        return {'message': '用戶名不存在，請先註冊。'}, 400
+        return {'message': '用户名不存在，请先注册。'}, 400
 
     if user and user.check_password(password):
-        session['user_id'] = user.id  # 使用 session 儲存用戶 ID
-        login_user(user)  # 使用 Flask-Login 進行用戶登錄
-        return {'message': '登錄成功！'}, 200
+        session['user_id'] = user.id  # 使用 session 保存用户 ID
+        login_user(user)  # 登录用户
+        print(f"User {user.username} logged in successfully.")  # 增加登录成功日志
+        return {'message': '登录成功！'}, 200
     else:
-        return {'message': '密碼錯誤，請重試。'}, 400
+        return {'message': '密码错误，请重试。'}, 400
 
 @users_bp.route('/logout', methods=['POST'])
 @login_required

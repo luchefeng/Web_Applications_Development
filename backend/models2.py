@@ -9,11 +9,19 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)  # 存储密码的哈希值
     calorie_version = db.Column(db.Boolean, default=False)  # 新增字段
     calorie_goal = db.Column(db.Integer, default=2000)
     profile = db.relationship('UserProfile', uselist=False, back_populates='user')
     ingredients = db.relationship('Ingredient', backref='user', lazy=True)
+
+    # 设置密码：接收明文密码，并加密后存储
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    # 校验密码：接收明文密码，与存储的哈希密码比较
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class UserProfile(db.Model):
     '''用户资料模型'''
