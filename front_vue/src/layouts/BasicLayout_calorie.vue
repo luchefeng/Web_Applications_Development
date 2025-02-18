@@ -90,7 +90,7 @@ const handleLogout = async () => {
 }
 
 .header {
-  background-color: #42b983;
+  background-color: #6ee2da;
   padding: 0px;
   position: fixed;        /* 固定定位 */
   top: 0;                /* 固定在顶部 */
