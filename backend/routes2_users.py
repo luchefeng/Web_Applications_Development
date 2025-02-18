@@ -73,7 +73,9 @@ def login():
         print(f"User {user.username} logged in successfully.")  # 增加登录成功日志
         return jsonify({
             'message': '登录成功！',
-            'calorie_version': user.calorie_version  # 返回用戶版本信息
+            'calorie_version': user.calorie_version,  # 返回用戶版本信息
+            'username': user.username,
+            'email': user.email
         }), 200
     else:
         return {'message': '密码错误，请重试。'}, 400

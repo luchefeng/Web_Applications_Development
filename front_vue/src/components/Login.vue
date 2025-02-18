@@ -100,9 +100,14 @@ const onFinish = async () => {
 
     // 存储登录状态
     localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userVersion', response.data.calorie_version); // 保存用户版本信息
 
     // 更新 Vuex 中的登录状态
     store.commit('setLoggedIn', true);
+
+    // 修改这里：确保正确设置布局
+    const layoutType = response.data.calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
+    store.commit('setLayout', layoutType); // 直接根据返回值设置布局
 
     // 根據返回的版本信息跳轉到不同的儀表盤
     const versionPath = response.data.calorie_version ? '/dashboard-calorie' : '/dashboard-cook';

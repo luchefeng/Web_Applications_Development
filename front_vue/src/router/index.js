@@ -5,6 +5,8 @@ import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
 import Profile from '@/views/Profile.vue';
 import Recipes from '@/views/Recipes.vue';
+import RecipesRecommend from '@/views/Recipes_recommend.vue';
+import RecipesSearch from '@/views/Recipes_view.vue';
 import Articles from '@/views/Articles.vue';
 import Home_link from '@/views/Home_link.vue';
 import Dashboard from '@/views/Dashboard.vue';
@@ -36,6 +38,16 @@ const routes = [
     path: '/ingredient-management', // 新增的路由路徑
     name: 'IngredientManagement',
     component: IngredientManagement // 使用導入的 IngredientManagement 組件
+  },
+  {
+    path: '/recipes-recommend',
+    name: 'RecipesRecommend',
+    component: RecipesRecommend
+  },
+  {
+    path: '/recipes-search',
+    name: 'RecipesSearch',
+    component: RecipesSearch
   },
   {
     path: '/dashboard-calorie',
