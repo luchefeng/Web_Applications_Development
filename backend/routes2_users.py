@@ -17,6 +17,7 @@ def user(id):
     user = User.query.get(id)
     return render_template('users/user.html', user=user)
 
+
 @users_bp.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
@@ -34,12 +35,19 @@ def register():
             return {'message': '用户名或邮箱已存在，请选择其他的'}, 400
 
         try:
-            new_user = User(username=username, email=email, password_hash=hashed_password, calorie_version=calorie_version)
+            new_user = User(username=username, email=email, password_hash=hashed_password,
+                            calorie_version=calorie_version)
             db.session.add(new_user)
             db.session.commit()
+
+            # 新增用戶後立即檢查用戶是否在數據庫中
+            user = User.query.filter_by(username='ten').first()
+            print(f"User in database: {user}")
+
             return {'message': '注册成功！请登录。'}, 201
-        except:
+        except Exception as e:
             db.session.rollback()
+            print(f"Error creating user: {e}")
             return {'message': '注册失败，请重试。'}, 500
 
 @users_bp.route('/login', methods=['POST'])
@@ -54,6 +62,7 @@ def login():
         return {'message': '验证码错误！'}, 400
 
     user = User.query.filter_by(username=username).first()
+    print(f"Querying user: {username}, Found: {user}")
 
     if not user:
         return {'message': '用户名不存在，请先注册。'}, 400
@@ -62,7 +71,10 @@ def login():
         session['user_id'] = user.id  # 使用 session 保存用户 ID
         login_user(user)  # 登录用户
         print(f"User {user.username} logged in successfully.")  # 增加登录成功日志
-        return {'message': '登录成功！'}, 200
+        return jsonify({
+            'message': '登录成功！',
+            'calorie_version': user.calorie_version  # 返回用戶版本信息
+        }), 200
     else:
         return {'message': '密码错误，请重试。'}, 400
 

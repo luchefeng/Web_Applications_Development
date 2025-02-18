@@ -76,6 +76,7 @@ const fetchCaptcha = async () => {
 onMounted(fetchCaptcha);
 
 const onFinish = async () => {
+  console.log('Logging in with:', formState.username, formState.password);
   try {
     // 先验证验证码
     const captchaResponse = await axios.post('http://localhost:5000/users/verify-captcha', {
@@ -103,15 +104,9 @@ const onFinish = async () => {
     // 更新 Vuex 中的登录状态
     store.commit('setLoggedIn', true);
 
-    // 根据用户选择的版本跳转到不同的仪表盘
-    const userInfoResponse = await axios.get('http://localhost:5000/users/user-info', { withCredentials: true });
-    const user = userInfoResponse.data;
-
-    if (user.calorieVersion) {
-      router.push({ path: '/dashboard-calorie' });
-    } else {
-      router.push({ path: '/dashboard-cook' });
-    }
+    // 根據返回的版本信息跳轉到不同的儀表盤
+    const versionPath = response.data.calorie_version ? '/dashboard-calorie' : '/dashboard-cook';
+    router.push({ path: versionPath });
 
   } catch (error) {
     console.error('登录失败:', error);
