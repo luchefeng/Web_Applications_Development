@@ -27,7 +27,7 @@
           <router-view />
         </a-layout-content>
         <a-layout-footer class = "footer">
-          <p>Calorie Tracker V0.0</p>
+          <p>Calorie.ver</p>
         </a-layout-footer>
       </a-layout>
     </a-space>
