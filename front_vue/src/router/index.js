@@ -10,14 +10,14 @@ import Home_link from '@/views/Home_link.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import CalorieManagement from '@/views/Calorie_Management.vue';
 import IngredientManagement from '@/views/Ingredient_Management.vue'; // 新增，導入 IngredientManagement 組件
-import DashboardCalorie from '@/layouts/BasicLayout_calorie.vue';
-import DashboardCook from '@/layouts/BasicLayout_cook.vue';
+import DashboardCalorie from '@/views/Dashboard_calorie.vue';
+import DashboardCook from '@/views/Dashboard_cook.vue';
 
 const routes = [
   { path: '/', component: Start },
   { path: '/home_link', component: Home_link },
   { path: '/start', component: Start },
-  { path: '/login', component: Login },
+{ path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/profile', component: Profile },
   { path: '/recipes', component: Recipes },

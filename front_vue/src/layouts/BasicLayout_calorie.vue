@@ -15,7 +15,7 @@
             <a-col flex="1"></a-col>
             <a-col flex="1">
               <nav class="right-nav">
-                <a-avatar :size="32" icon="user" />
+                <a-avatar :size="32" icon="user" class="user-avatar" @click="goToProfile" />
                 <a-button type="primary" @click="handleLogout">
                   Logout
                 </a-button>
@@ -77,6 +77,10 @@ const handleLogout = async () => {
     store.dispatch('logout');
     router.push('/');
   }
+};
+
+const goToProfile = () => {
+  router.push('/profile');
 };
 </script>
 
@@ -154,4 +158,12 @@ main {
   margin-top: 64px;      /* 为固定header留出空间，64px是header的高度 */
 }
 
+.user-avatar {
+  cursor: pointer;  /* 添加手型光标 */
+  transition: opacity 0.3s;  /* 添加过渡效果 */
+}
+
+.user-avatar:hover {
+  opacity: 0.8;  /* 悬停时的透明度效果 */
+}
 </style>
