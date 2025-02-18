@@ -139,7 +139,7 @@ main {
 
 .footer {
   text-align: center;
-  background-color: #42b983;
+  background-color: #6ee2da;
   color: white;
   padding: 10px;
   bottom: 0;
