@@ -18,15 +18,16 @@
 - 添加Ingredient_Recomend.vue，实现推荐食品的功能
 ! 目前尚未与后端联通
 - 在BasicLayout_calorie.vue中详细进行了CORS的设置，使得前端可以正常与后端进行通信
+- 更改layout，使得点击头像跳转个人资料页，并新增其他内容
+- 更改了BasicLayout_calorie.vue和BasicLayout_coo.vue，但是切换暂时还存在问题（新建了test1用于测试此问题）
 
 ## 下一步要实现的
 
-- 在登录后自动跳转到仪表盘，也就是home
+- debug顶栏更改的问题
 
 ## 下下步要实现的
 
 - 进一步美化各个页面
-- 在注册之前让用户选择模式（关注卡路里与否），并以基础的basic layout为基础，构建两个版本的layout，在选择了对应模式的用户登录后切入对应的basiclayout和对应的仪表盘
 
 ## 需要后端的部分
 

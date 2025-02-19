@@ -6,10 +6,11 @@
           <a-row>
             <a-col flex="3">
               <nav>
-                <router-link to="/">Home</router-link>
+                <router-link to="/dashboard">Dashboard</router-link>
                 <router-link to="/profile">Profile</router-link>
                 <router-link to="/recipes">Recipes</router-link>
                 <router-link to="/calorie-management">Calorie</router-link>
+                <router-link to="/ingredient-management">Ingredient</router-link>
               </nav>                
             </a-col>
             <a-col flex="1"></a-col>
