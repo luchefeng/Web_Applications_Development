@@ -20,10 +20,12 @@
 - 在BasicLayout_calorie.vue中详细进行了CORS的设置，使得前端可以正常与后端进行通信
 - 更改layout，使得点击头像跳转个人资料页，并新增其他内容
 - 更改了BasicLayout_calorie.vue和BasicLayout_coo.vue，但是切换暂时还存在问题（新建了test1用于测试此问题）
+- debug顶栏更改的问题
+- 注册时可以选择不同的版本
 
 ## 下一步要实现的
 
-- debug顶栏更改的问题
+
 
 ## 下下步要实现的
 
