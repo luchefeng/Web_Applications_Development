@@ -38,7 +38,9 @@ export default createStore({
     login({ commit }, user) {
       commit('setUser', user);
       commit('setLoginStatus', true);
-      commit('setLayout', 'BasicLayout_calorie');
+      // 根据用户版本设置布局
+      const layoutType = user.calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
+      commit('setLayout', layoutType);
     },
     
     logout({ commit }) {
@@ -52,7 +54,6 @@ export default createStore({
       try {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         if (isLoggedIn) {
-          // 获取用户信息
           const response = await axios.get('http://localhost:5000/users/user-info', {
             withCredentials: true
           });
@@ -61,6 +62,7 @@ export default createStore({
           const layoutType = response.data.calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
           commit('setLayout', layoutType);
           commit('setLoginStatus', true);
+          commit('setUser', response.data);
         } else {
           commit('setLayout', 'BasicLayout');
           commit('setLoginStatus', false);
