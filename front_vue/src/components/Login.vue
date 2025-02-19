@@ -76,38 +76,30 @@ const fetchCaptcha = async () => {
 onMounted(fetchCaptcha);
 
 const onFinish = async () => {
-  console.log('Logging in with:', formState.username, formState.password);
   try {
-    // 先验证验证码
-    const captchaResponse = await axios.post('http://localhost:5000/users/verify-captcha', {
-      captcha: formState.captcha,
-    }, { withCredentials: true });
-
-    if (captchaResponse.data.message !== '驗證碼正確！') {
-      throw new Error('Captcha validation failed');
+    const response = await axios.post('http://localhost:5000/users/login', formState, {
+      withCredentials: true
+    });
+    
+    if (response.status === 200) {
+      const { calorie_version } = response.data;
+      console.log('User version:', calorie_version); // 添加日志
+      
+      // 根据后端返回的版本信息设置布局
+      const layoutType = calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
+      store.commit('setLayout', layoutType);
+      store.commit('setLoginStatus', true);
+      
+      // 存储用户信息
+      store.commit('setUser', {
+        username: response.data.username,
+        email: response.data.email,
+        calorie_version: calorie_version
+      });
+      
+      // 根据版本跳转到相应的仪表板
+      router.push(calorie_version ? '/dashboard-calorie' : '/dashboard-cook');
     }
-
-    // 验证码正确后，调用登录
-    const response = await axios.post('http://localhost:5000/users/login', {
-      username: formState.username,
-      password: formState.password,
-      captcha: formState.captcha,
-    }, { withCredentials: true });
-
-    console.log('登录成功:', response.data);
-    errorMessage.value = '';  // 清除错误消息
-    successMessage.value = '登录成功！';  // 显示成功消息
-
-    // 存储登录状态
-    localStorage.setItem('isLoggedIn', 'true');
-
-    // 更新 Vuex 中的登录状态
-    store.commit('setLoggedIn', true);
-
-    // 根據返回的版本信息跳轉到不同的儀表盤
-    const versionPath = response.data.calorie_version ? '/dashboard-calorie' : '/dashboard-cook';
-    router.push({ path: versionPath });
-
   } catch (error) {
     console.error('登录失败:', error);
     // 错误提示信息

@@ -26,6 +26,7 @@ def register():
         password = request.json.get('password')
         calorie_version = request.json.get('calorieVersion', False)  # 获取是否选择卡路里管理版本
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        print(f"Received calorie_version: {calorie_version}")  # 添加日志
 
         if not email:
             return {'message': '电子邮件不能为空'}, 400
@@ -43,8 +44,9 @@ def register():
             # 新增用戶後立即檢查用戶是否在數據庫中
             user = User.query.filter_by(username='ten').first()
             print(f"User in database: {user}")
+            print(f"User registered with calorie version: {calorie_version}")  # 添加日志
 
-            return {'message': '注册成功！请登录。'}, 201
+            return {'message': '注册成功！请登录。', 'calorie_version': calorie_version}, 201
         except Exception as e:
             db.session.rollback()
             print(f"Error creating user: {e}")
@@ -73,7 +75,9 @@ def login():
         print(f"User {user.username} logged in successfully.")  # 增加登录成功日志
         return jsonify({
             'message': '登录成功！',
-            'calorie_version': user.calorie_version  # 返回用戶版本信息
+            'calorie_version': user.calorie_version,  # 返回用戶版本信息
+            'username': user.username,
+            'email': user.email
         }), 200
     else:
         return {'message': '密码错误，请重试。'}, 400

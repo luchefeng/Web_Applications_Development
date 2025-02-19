@@ -8,17 +8,18 @@
         <button v-if="isLoggedIn" @click="logout">Logout</button>
       </nav>
     </header>
-    <component :is="layout">
+    <component :is="currentLayout">
       <router-view />
     </component>
   </div>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BasicLayout from './layouts/BasicLayout.vue';
 import BasicLayout_calorie from './layouts/BasicLayout_calorie.vue';
+import BasicLayout_cook from './layouts/BasicLayout_cook.vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
 
@@ -28,9 +29,20 @@ const store = useStore();
 
 const isLoggedIn = computed(() => store.state.isLoggedIn);
 
-// 使用 computed 來追踪登錄狀態
-const layout = computed(() => {
-  return isLoggedIn.value ? BasicLayout_calorie : BasicLayout;
+// 动态计算当前应该使用的布局组件
+const currentLayout = computed(() => {
+  const layoutName = store.state.layout;
+  const layouts = {
+    'BasicLayout': BasicLayout,
+    'BasicLayout_calorie': BasicLayout_calorie,
+    'BasicLayout_cook': BasicLayout_cook
+  };
+  return layouts[layoutName] || BasicLayout;
+});
+
+// 在组件挂载时初始化store
+onMounted(() => {
+  store.dispatch('initializeStore');
 });
 
 const logout = async () => {

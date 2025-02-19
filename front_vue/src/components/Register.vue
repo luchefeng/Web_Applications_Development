@@ -27,8 +27,8 @@
       </a-form-item>
 
       <a-form-item label="是否选择卡路里管理版本" name="calorieVersion">
-        <a-checkbox v-model:checked="formState.calorieVersion" :disabled="true">
-          {{ formState.calorieVersion ? '已选择卡路里管理版' : '未选择卡路里管理版' }}
+        <a-checkbox v-model:checked="formState.calorieVersion">
+          {{ formState.calorieVersion ? '选择卡路里管理版' : '选择菜谱浏览版' }}
         </a-checkbox>
       </a-form-item>
 
@@ -58,7 +58,7 @@ const formState = reactive({
   username: '',
   email: '',
   password: '',
-  calorieVersion: route.query.version === 'calorie',
+  calorieVersion: false, // 默认不选择卡路里管理版本
 });
 
 const errorMessage = ref('');
@@ -70,15 +70,18 @@ const onFinish = async () => {
       username: formState.username,
       email: formState.email,
       password: formState.password,
-      calorieVersion: formState.calorieVersion,
+      calorieVersion: formState.calorieVersion, // 确保发送此字段
     });
 
     console.log('注册成功:', response.data);
     errorMessage.value = '';
     successMessage.value = '注册成功！请登录。';
 
-    // 跳转到登录页面
-    router.push('/login');
+    // 跳转到登录页面，并传递版本信息
+    router.push({
+      path: '/login',
+      query: { version: formState.calorieVersion ? 'calorie' : 'cook' }
+    });
   } catch (error) {
     console.error('注册失败:', error);
     errorMessage.value = error.response?.data?.message || '注册失败，请重试。';
