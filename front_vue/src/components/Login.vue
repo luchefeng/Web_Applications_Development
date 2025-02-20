@@ -80,23 +80,31 @@ const onFinish = async () => {
     const response = await axios.post('http://localhost:5000/users/login', formState, {
       withCredentials: true
     });
-    
+
     if (response.status === 200) {
-      const { calorie_version } = response.data;
-      console.log('User version:', calorie_version); // 添加日志
-      
+      const { calorie_version, user_id } = response.data;
+      console.log('User version:', calorie_version);
+      console.log('User ID from backend:', user_id);
+
+      if (user_id) {
+        localStorage.setItem('user_id', user_id);
+        console.log('Stored user_id in localStorage:', user_id);
+      } else {
+        console.error('Backend did not return a valid user_id');
+      }
+
       // 根据后端返回的版本信息设置布局
       const layoutType = calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
       store.commit('setLayout', layoutType);
       store.commit('setLoginStatus', true);
-      
+
       // 存储用户信息
       store.commit('setUser', {
         username: response.data.username,
         email: response.data.email,
         calorie_version: calorie_version
       });
-      
+
       // 根据版本跳转到相应的仪表板
       router.push(calorie_version ? '/dashboard-calorie' : '/dashboard-cook');
     }

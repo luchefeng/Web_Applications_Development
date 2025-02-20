@@ -58,28 +58,34 @@ def login():
     password = request.json.get('password')
     captcha = request.json.get('captcha')
 
-    print(f"Session ID: {session.sid}, CAPTCHA in session: {session.get('captcha')}")  # 添加日誌
+    print(f"Session ID: {session.sid}, CAPTCHA in session: {session.get('captcha')}")  # 添加日志
 
     if 'captcha' not in session or session['captcha'] != captcha:
+        print("验证码错误，登录失败")
         return {'message': '验证码错误！'}, 400
 
     user = User.query.filter_by(username=username).first()
     print(f"Querying user: {username}, Found: {user}")
 
     if not user:
+        print("用户名不存在，登录失败")
         return {'message': '用户名不存在，请先注册。'}, 400
 
     if user and user.check_password(password):
         session['user_id'] = user.id  # 使用 session 保存用户 ID
         login_user(user)  # 登录用户
         print(f"User {user.username} logged in successfully.")  # 增加登录成功日志
-        return jsonify({
+        response_data = {
             'message': '登录成功！',
-            'calorie_version': user.calorie_version,  # 返回用戶版本信息
+            'user_id': user.id,  # 添加 user_id 字段
+            'calorie_version': user.calorie_version,  # 返回用户版本信息
             'username': user.username,
             'email': user.email
-        }), 200
+        }
+        print(f"返回的响应数据: {response_data}")
+        return jsonify(response_data), 200
     else:
+        print("密码错误，登录失败")
         return {'message': '密码错误，请重试。'}, 400
 
 @users_bp.route('/logout', methods=['POST'])
