@@ -6,8 +6,9 @@
           <a-row>
             <a-col flex="3">
               <nav>
-                <router-link to="/">Home</router-link>
-                <router-link to="/profile">Profile</router-link>
+                <router-link to="/dashboard-cook">导航</router-link>
+                <router-link to="/profile">资料</router-link>
+                <router-link to="/ingredient-management">食材管理</router-link>
                 <router-link to="/recipes-recommend">菜谱推荐</router-link>
                 <router-link to="/recipes-view">菜谱浏览</router-link>
               </nav>                
