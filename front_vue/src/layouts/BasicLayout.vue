@@ -6,10 +6,26 @@
             <a-row>
               <a-col flex="3">
                 <nav>
-                  <router-link to="/">Home</router-link>
-                  <router-link to="/profile">Profile</router-link>
-                  <router-link to="/recipes">Recipes</router-link>
-                  <router-link to="/articles">Articles</router-link>
+                  <a-col flex="1">
+                    <a-button type="primary" class="nav-button">
+                      <router-link to="/register">导航</router-link>
+                    </a-button>
+                  </a-col>
+                  <a-col flex="1">
+                    <a-button type="primary" class="nav-button">
+                      <router-link to="/register">食材管理</router-link>
+                    </a-button>
+                  </a-col>
+                  <a-col flex="1">
+                    <a-button type="primary" class="nav-button">
+                      <router-link to="/register">卡路里管理</router-link>
+                    </a-button>
+                  </a-col>
+                  <a-col flex="1">
+                    <a-button type="primary" class="nav-button">
+                      <router-link to="/register">菜谱浏览</router-link>
+                    </a-button>
+                  </a-col>
                 </nav>                
               </a-col>
               <a-col flex="1"></a-col>
@@ -17,15 +33,15 @@
                 <nav class="right-nav">
                   <template v-if="isLoggedIn">
                     <a-avatar :size="32" icon="user" />
-                    <a-button type="primary" @click="handleLogout">
+                    <a-button type="primary" @click="handleLogout" class="custom-button">
                       Logout
                     </a-button>
                   </template>
                   <template v-else>
-                    <a-button type="primary">
+                    <a-button type="primary" class="custom-button">
                       <router-link to="/register">Register</router-link>
                     </a-button>
-                    <a-button type="primary">
+                    <a-button type="primary" class="custom-button">
                       <router-link to="/login">Login</router-link>
                     </a-button>
                   </template>
@@ -90,6 +106,7 @@ const handleLogout = async () => {
     align-items: center; /* 垂直居中 */
     height: 100%; /* 确保导航栏占满高度 */
   }
+
   
   .right-nav {
     justify-content: flex-end;  /* 保持右对齐 */
@@ -138,6 +155,34 @@ const handleLogout = async () => {
 
   .content {
     margin-top: 64px;      /* 为固定header留出空间，64px是header的高度 */
+  }
+
+  .nav-button {
+    background-color: #42b983 !important;
+    border-color: #42b983 !important;
+    color: white !important;
+  }
+
+  .nav-button:hover {
+    background-color: #97f6d8 !important;
+    border-color: #97f6d8  !important;
+  }
+
+  .custom-button {
+    background-color: #42b983 !important;
+    border-color: #fcfdfc !important;
+    color: white !important;
+  }
+
+  .custom-button:hover {
+    background-color: #97f6d8 !important;
+    border-color: #fbfbfb !important;
+    opacity: 0.9;
+  }
+
+  /* 确保按钮内的链接文字为白色 */
+  .custom-button a {
+    color: white !important;
   }
 
 </style>

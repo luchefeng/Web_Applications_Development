@@ -7,11 +7,11 @@
         <span class="subtitle">开启您的美食之旅</span>
       </h1>
       <a-row :gutter="[24, 24]" justify="center">
-        <a-col :span="8">
+        <a-col :span="8" class="feature-list">
           <a-card hoverable @click="handleVersionSelect('calorie')">
             <a-card-meta title="卡路里管理版" description="适合需要控制饮食摄入的用户" />
             <template #cover>
-              <ul class="feature-list">
+              <ul>
                 <li>食材管理</li>
                 <li>菜谱推荐</li>
                 <li>菜谱浏览</li>
@@ -20,10 +20,10 @@
             </template>
           </a-card>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="8" class="feature-list">
           <a-card hoverable @click="handleVersionSelect('basic')">
             <template #cover>
-              <ul class="feature-list">
+              <ul>
                 <li>食材管理</li>
                 <li>菜谱推荐</li>
                 <li>菜谱浏览</li>
@@ -286,4 +286,62 @@ const handleVersionSelect = (version) => {
     max-width: 100%;
   }
 }
+
+.feature-list h2 {
+  color: #42b983;
+  margin-bottom: 20px;
+  font-size: 2em;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+/* 添加悬停效果 */
+.feature-list h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: #42b983;
+  transition: width 0.3s ease;
+}
+
+.feature-list:hover h2::after {
+  width: 100px;
+}
+
+.feature-list p {
+  font-size: 1.1em;
+  line-height: 1.8;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.feature-list ul {
+  list-style-type: none; /* 移除默认的列表标记 */
+  padding: 0; /* 移除默认的内边距 */
+}
+
+.feature-list ul li {
+  margin: 15px 0;
+  padding-left: 30px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.feature-list ul li:hover {
+  transform: translateX(10px);
+}
+
+.feature-list ul li:before {
+  content: "• ";
+  color: #42b983;
+  font-size: 1.5em;
+  position: relative;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 </style>

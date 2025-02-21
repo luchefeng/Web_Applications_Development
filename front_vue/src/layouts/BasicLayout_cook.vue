@@ -6,19 +6,34 @@
           <a-row>
             <a-col flex="3">
               <nav>
-                <router-link to="/dashboard-cook">导航</router-link>
-                <router-link to="/profile">资料</router-link>
-                <router-link to="/ingredient-management">食材管理</router-link>
-                <router-link to="/recipes-recommend">菜谱推荐</router-link>
-                <router-link to="/recipes-view">菜谱浏览</router-link>
-              </nav>                
+                <a-col flex="1">
+                  <a-button type="primary" class="nav-button">
+                    <router-link to="/dashboard-calorie">导航</router-link>
+                  </a-button>
+                </a-col>
+                <a-col flex="1">
+                  <a-button type="primary" class="nav-button">
+                    <router-link to="/ingredient-management">食材管理</router-link>
+                  </a-button>
+                </a-col>
+                <a-col flex="1">
+                  <a-button type="primary" class="nav-button">
+                    <router-link to="/recipes-view">菜谱浏览</router-link>
+                  </a-button>
+                </a-col>
+                <a-col flex="1">
+                  <a-button type="primary" class="nav-button">
+                    <router-link to="/profile">我的资料</router-link>
+                  </a-button>
+                </a-col>
+              </nav>                 
             </a-col>
             <a-col flex="1"></a-col>
             <a-col flex="1">
               <nav class="right-nav">
                 <a-avatar :size="32" icon="user" class="user-avatar" @click="goToProfile" />
-                <a-button type="primary" @click="handleLogout">
-                  Logout
+                <a-button type="primary" @click="handleLogout"  class="custom-button">
+                  登出
                 </a-button>
               </nav>
             </a-col>
@@ -95,7 +110,7 @@ const goToProfile = () => {
 }
 
 .header {
-  background-color: #6ee2da;
+  background-color: #42b983;
   padding: 0px;
   position: fixed;        /* 固定定位 */
   top: 0;                /* 固定在顶部 */
@@ -144,7 +159,7 @@ main {
 
 .footer {
   text-align: center;
-  background-color: #6ee2da;
+  background-color: #42b983;
   color: white;
   padding: 10px;
   bottom: 0;
@@ -167,4 +182,30 @@ main {
 .user-avatar:hover {
   opacity: 0.8;  /* 悬停时的透明度效果 */
 }
+.nav-button {
+    background-color: #42b983 !important;
+    border-color: #42b983 !important;
+    color: white !important;
+  }
+
+  .nav-button:hover {
+    background-color: #97f6d8 !important;
+    border-color: #97f6d8  !important;
+  }
+  
+  .custom-button {
+    background-color: #42b983 !important;
+    border-color: #fcfdfc !important;
+    color: white !important;
+  }
+
+  .custom-button:hover {
+    background-color: #97f6d8 !important;
+    border-color: #fbfbfb !important;
+    opacity: 0.9;
+  }
+
+  .custom-button a {
+    color: white !important;
+  }
 </style>
