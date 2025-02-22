@@ -8,7 +8,7 @@
               <nav>
                 <a-col flex="1">
                   <a-button type="primary" class="nav-button">
-                    <router-link to="/dashboard-calorie">导航</router-link>
+                    <router-link to="/dashboard-cook">导航</router-link>
                   </a-button>
                 </a-col>
                 <a-col flex="1">

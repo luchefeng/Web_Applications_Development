@@ -2,9 +2,7 @@
   <div class="dashboard">
     <!-- 個人信息區塊 -->
     <section class="user-info">
-      <h1>歡迎，{{ user.username }}</h1>
-      <p><strong>用戶名：</strong> {{ user.username }}</p>
-      <p><strong>電子郵件：</strong> {{ user.email }}</p>
+      <h1>欢迎，{{ user.username }}</h1>
     </section>
 
     <!-- 功能模塊區塊 -->
@@ -99,5 +97,29 @@ const navigateTo = (path) => {
 .feature-card :deep(.ant-card-cover img) {
   height: 50px;
   object-fit: cover;
+}
+
+/* 添加打字机效果相关样式 */
+.user-info {
+  overflow: hidden;
+  border-right: .15em solid #42b983;
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .15em;
+  font-weight: 600;
+  font-size: 1.8em;
+  animation: 
+    typing 5s steps(40, end),
+    blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: max-content }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #42b983; }
 }
 </style>
