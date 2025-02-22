@@ -53,7 +53,7 @@
             <router-view />
           </a-layout-content>
           <a-layout-footer class = "footer">
-            <p>Calorie Tracker V0.0</p>
+            <p>食有道 V1.0</p>
           </a-layout-footer>
         </a-layout>
       </a-space>
