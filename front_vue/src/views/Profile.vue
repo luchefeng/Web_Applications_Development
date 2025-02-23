@@ -2,53 +2,32 @@
   <div class="profile-container">
     <h2>个人资料</h2>
     <a-form :model="profileForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
-      <!-- 头像上传 -->
-      <a-form-item label="头像">
-        <a-upload
-          v-model:file-list="fileList"
-          list-type="picture-circle"
-          :show-upload-list="false"
-          @change="handleAvatarChange"
-        >
-          <div v-if="!profileForm.avatar_url">
-            <plus-outlined />
-            <div style="margin-top: 8px">上传</div>
-          </div>
-          <img
-            v-else
-            :src="profileForm.avatar_url"
-            alt="avatar"
-            style="width: 100%"
-          />
-        </a-upload>
-      </a-form-item>
-
       <!-- 基本信息 -->
-      <a-form-item label="昵称">
-        <a-input v-model:value="profileForm.nickname" />
+      <a-form-item label="用户名">
+        <a-input v-model:value="profileForm.username" disabled />
       </a-form-item>
 
-      <a-form-item label="性别">
-        <a-radio-group v-model:value="profileForm.gender">
-          <a-radio value="male">男</a-radio>
-          <a-radio value="female">女</a-radio>
-          <a-radio value="other">其他</a-radio>
-        </a-radio-group>
+      <a-form-item label="昵称">
+        <a-input v-model:value="profileForm.profile.nickname" />
       </a-form-item>
 
       <a-form-item label="邮箱">
-        <a-input v-model:value="profileForm.email" />
+        <a-input v-model:value="profileForm.email" disabled />
+      </a-form-item>
+
+      <a-form-item label="个性签名">
+        <a-textarea v-model:value="profileForm.profile.bio" :rows="4" />
       </a-form-item>
 
       <a-form-item label="账户版本">
         <a-tag :color="profileForm.calorie_version ? 'green' : 'blue'">
-          {{ profileForm.calorie_version ? '卡路里管理版' : '基础版' }}
+          {{ profileForm.calorie_version ? '卡路里管理版' : '仅美食管理版' }}
         </a-tag>
       </a-form-item>
 
       <!-- 卡路里目标（仅卡路里版显示） -->
       <template v-if="profileForm.calorie_version">
-        <a-form-item label="卡路里目标">
+        <a-form-item label="每日卡路里目标">
           <a-input-number 
             v-model:value="profileForm.calorie_goal" 
             :min="1000" 
@@ -57,20 +36,13 @@
         </a-form-item>
       </template>
 
-      <!-- 密码修改 -->
-      <a-form-item label="修改密码">
-        <a-button type="link" @click="showPasswordModal = true">
-          修改密码
-        </a-button>
-      </a-form-item>
-
       <!-- 保存按钮 -->
       <a-form-item :wrapper-col="{ offset: 6, span: 14 }">
         <a-button type="primary" @click="handleSubmit">保存更改</a-button>
       </a-form-item>
     </a-form>
 
-    <!-- 密码修改弹窗 -->
+    <!-- 密码修改按钮和弹窗 -->
     <a-modal
       v-model:visible="showPasswordModal"
       title="修改密码"
@@ -95,16 +67,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
-import { PlusOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
 
 const profileForm = ref({
-  nickname: '',
-  gender: 'other',
+  username: '',
   email: '',
-  avatar_url: '',
   calorie_version: false,
-  calorie_goal: 2000
+  calorie_goal: 2000,
+  profile: {
+    nickname: '',
+    bio: '',
+    avatar_url: ''
+  }
 });
 
 const passwordForm = ref({
@@ -119,31 +93,53 @@ const fileList = ref([]);
 // 获取用户信息
 const fetchUserProfile = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/users/profile', {
+    const response = await axios.get('http://localhost:5000/users/user-info', {
       withCredentials: true
     });
-    profileForm.value = { ...response.data };
+    
+    // 合并用户信息
+    profileForm.value = {
+      ...response.data,
+      profile: response.data.profile || {
+        nickname: '',
+        bio: '',
+        avatar_url: ''
+      }
+    };
   } catch (error) {
     message.error('获取用户信息失败');
+    console.error('Error fetching profile:', error);
   }
 };
 
 // 保存个人资料
 const handleSubmit = async () => {
   try {
-    await axios.put('http://localhost:5000/users/profile', profileForm.value, {
+    const updateData = {
+      profile: {
+        nickname: profileForm.value.profile.nickname,
+        bio: profileForm.value.profile.bio
+      }
+    };
+
+    if (profileForm.value.calorie_version) {
+      updateData.calorie_goal = profileForm.value.calorie_goal;
+    }
+
+    await axios.put('http://localhost:5000/users/profile', updateData, {
       withCredentials: true
     });
     message.success('保存成功');
   } catch (error) {
     message.error('保存失败');
+    console.error('Error updating profile:', error);
   }
 };
 
 // 处理头像上传
 const handleAvatarChange = (info) => {
   if (info.file.status === 'done') {
-    profileForm.value.avatar_url = info.file.response.url;
+    profileForm.value.profile.avatar_url = info.file.response.url;
     message.success('头像上传成功');
   }
 };
