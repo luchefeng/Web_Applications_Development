@@ -31,7 +31,7 @@
             <a-col flex="1"></a-col>
             <a-col flex="1">
               <nav class="right-nav">
-                <a-avatar :size="32" icon="user" class="user-avatar" @click="goToProfile" />
+                <a-avatar :size="32" icon="我" class="user-avatar" @click="goToProfile" />
                 <a-button type="primary" @click="handleLogout"  class="custom-button">
                   登出
                 </a-button>
