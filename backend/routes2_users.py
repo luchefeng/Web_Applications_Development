@@ -105,12 +105,18 @@ def dashboard():
 @users_bp.route('/user-info', methods=['GET'])
 @login_required
 def user_info():
-    user_id = session.get('user_id')
-    user = User.query.get(user_id)
-    return {
+    user = current_user
+    return jsonify({
         'username': user.username,
-        'email': user.email
-    }, 200
+        'email': user.email,
+        'calorie_version': user.calorie_version,
+        'calorie_goal': user.calorie_goal,
+        'profile': {
+            'nickname': user.profile.nickname if user.profile else '',
+            'bio': user.profile.bio if user.profile else '',
+            'avatar_url': user.profile.avatar_url if user.profile else ''
+        }
+    }), 200
 
 @users_bp.route('/delete_account/<int:id>', methods=['POST'])
 @login_required
@@ -153,3 +159,29 @@ def verify_captcha():
         return jsonify({'message': '驗證碼正確！'}), 200
     else:
         return jsonify({'message': '驗證碼錯誤！'}), 400
+
+@users_bp.route('/profile', methods=['PUT'])
+@login_required
+def update_profile():
+    data = request.json
+    user = current_user
+
+    try:
+        # 更新用户资料
+        if 'profile' in data:
+            if not user.profile:
+                user.profile = UserProfile()
+            
+            profile_data = data['profile']
+            user.profile.nickname = profile_data.get('nickname')
+            user.profile.bio = profile_data.get('bio')
+
+        # 更新卡路里目标
+        if user.calorie_version and 'calorie_goal' in data:
+            user.calorie_goal = data['calorie_goal']
+
+        db.session.commit()
+        return jsonify({'message': '个人资料更新成功'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': '更新失败', 'error': str(e)}), 400

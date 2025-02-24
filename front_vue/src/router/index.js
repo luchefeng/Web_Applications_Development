@@ -19,7 +19,7 @@ const routes = [
   { path: '/', component: Start },
   { path: '/home_link', component: Home_link },
   { path: '/start', component: Start },
-{ path: '/login', component: Login },
+  { path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/profile', component: Profile },
   { path: '/recipes', component: Recipes },
@@ -48,6 +48,18 @@ const routes = [
     path: '/recipes-search',
     name: 'RecipesSearch',
     component: RecipesSearch
+  },
+  {
+    path: '/recipes/add',
+    name: 'RecipesAdd',
+    component: () => import('@/views/Recipes_add.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/recipes-view',
+    name: 'Recipes',
+    component: () => import('@/views/Recipes_view.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/dashboard-calorie',
