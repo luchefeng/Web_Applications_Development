@@ -28,9 +28,9 @@
       <!-- 卡路里目标（仅卡路里版显示） -->
       <template v-if="profileForm.calorie_version">
         <a-form-item label="每日卡路里目标">
-          <a-input-number 
-            v-model:value="profileForm.calorie_goal" 
-            :min="1000" 
+          <a-input-number
+            v-model:value="profileForm.calorie_goal"
+            :min="1000"
             :max="5000"
           /> kcal/天
         </a-form-item>
@@ -67,7 +67,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
-import axios from 'axios';
+import axios from 'axios';  // 使用默认的 Axios 引入
+
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:5000',
+  withCredentials: true  // 默认携带凭证
+});
 
 const profileForm = ref({
   username: '',
@@ -93,10 +98,8 @@ const fileList = ref([]);
 // 获取用户信息
 const fetchUserProfile = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/users/user-info', {
-      withCredentials: true
-    });
-    
+    const response = await axiosInstance.get('/users/user-info');
+
     // 合并用户信息
     profileForm.value = {
       ...response.data,
@@ -126,9 +129,7 @@ const handleSubmit = async () => {
       updateData.calorie_goal = profileForm.value.calorie_goal;
     }
 
-    await axios.put('http://localhost:5000/users/profile', updateData, {
-      withCredentials: true
-    });
+    await axiosInstance.put('/users/profile', updateData);
     message.success('保存成功');
   } catch (error) {
     message.error('保存失败');
@@ -152,11 +153,11 @@ const handlePasswordChange = async () => {
   }
 
   try {
-    await axios.put('http://localhost:5000/users/change-password', {
+    await axiosInstance.put('/users/change-password', {
       oldPassword: passwordForm.value.oldPassword,
       newPassword: passwordForm.value.newPassword
-    }, { withCredentials: true });
-    
+    });
+
     message.success('密码修改成功');
     showPasswordModal.value = false;
     passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };
