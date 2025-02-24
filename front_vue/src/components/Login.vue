@@ -21,7 +21,7 @@
       <a-form-item label="验证码">
         <div style="display: flex; align-items: center;">
           <img :src="captchaUrl" @click="fetchCaptcha" style="cursor: pointer; margin-right: 10px;">
-          <a-input v-model:value="formState.captcha" placeholder="输入验证码">
+          <a-input v-model:value="formState.captcha" placeholder="Enter captcha">
             <template #prefix>
               <SafetyOutlined class="site-form-item-icon" />
             </template>
