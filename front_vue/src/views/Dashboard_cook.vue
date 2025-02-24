@@ -99,8 +99,8 @@ const navigateTo = (path) => {
   object-fit: cover;
 }
 
-/* 添加打字机效果相关样式 */
-.user-info {
+/* 修改打字机效果样式 */
+.user-info h1 {  /* 修改选择器，确保只应用于 h1 标签 */
   overflow: hidden;
   border-right: .15em solid #42b983;
   white-space: nowrap;
@@ -108,14 +108,21 @@ const navigateTo = (path) => {
   letter-spacing: .15em;
   font-weight: 600;
   font-size: 1.8em;
+  display: inline-block;  /* 添加这行 */
   animation: 
     typing 5s steps(40, end),
     blink-caret .75s step-end infinite;
 }
 
 @keyframes typing {
-  from { width: 0 }
-  to { width: max-content }
+  from { 
+    width: min-content;
+    visibility: visible;  /* 确保文字始终可见 */
+  }
+  to { 
+    width: max-content;
+    visibility: visible;  /* 确保文字始终可见 */
+  }
 }
 
 @keyframes blink-caret {

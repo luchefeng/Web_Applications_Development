@@ -92,14 +92,21 @@ const navigateTo = (path) => {
   letter-spacing: .15em;
   font-weight: 600;  /* 增加字体粗细 */
   font-size: 1.8em;  /* 适当增大字号 */
+  display: inline-block;  /* 添加这行 */
   animation: 
-    typing 5s steps(40, end),      /* 增加动画时长从3.5s到5s */
+    typing 5s steps(40, end),
     blink-caret .75s step-end infinite;
 }
 
 @keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
+  from { 
+    width: min-content;
+    visibility: visible;  /* 确保文字始终可见 */
+  }
+  to { 
+    width: max-content;
+    visibility: visible;  /* 确保文字始终可见 */
+  }
 }
 
 @keyframes blink-caret {
