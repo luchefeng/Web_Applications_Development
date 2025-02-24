@@ -149,6 +149,7 @@ main {
   background-color: #42b983;
   color: white;
   padding: 10px;
+  margin-top: auto;   /* 修改这行 */
   bottom: 0;
   width: 100%;
   /*
@@ -159,6 +160,8 @@ main {
 
 .content {
   margin-top: 64px;      /* 为固定header留出空间，64px是header的高度 */
+  flex: 1;           /* 添加这行，让内容区域自动填充空间 */
+  padding: 24px;     /* 添加内边距 */
 }
 
 .user-avatar {
@@ -195,4 +198,16 @@ main {
   .custom-button a {
     color: white !important;
   }
+
+#basic-layout {
+  min-height: 100vh;  /* 添加这行，确保最小高度为视窗高度 */
+  display: flex;      /* 添加这行 */
+  flex-direction: column; /* 添加这行 */
+}
+
+.ant-layout {
+  min-height: 100vh;  /* 添加这行 */
+  display: flex;      /* 添加这行 */
+  flex-direction: column; /* 添加这行 */
+}
 </style>
