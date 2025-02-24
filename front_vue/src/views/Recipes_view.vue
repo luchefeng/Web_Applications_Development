@@ -2,9 +2,18 @@
   <div class="recipes-container">
     <div class="recipes-header">
       <h2>菜谱列表</h2>
-      <a-button type="primary" @click="$router.push('/recipes/add')">
-        添加新菜谱
-      </a-button>
+      <div class="header-controls">
+        <a-input-search
+          v-model:value="searchQuery"
+          placeholder="搜索菜谱名称"
+          style="width: 250px; margin-right: 16px;"
+          @search="onSearch"
+          @change="onSearch"
+        />
+        <a-button type="primary" @click="$router.push('/recipes/add')">
+          添加新菜谱
+        </a-button>
+      </div>
     </div>
 
     <div v-if="loading" class="loading-container">
@@ -16,7 +25,7 @@
     </div>
 
     <a-row :gutter="[16, 16]" v-else>
-      <a-col :span="8" v-for="recipe in recipes" :key="recipe.id">
+      <a-col :span="8" v-for="recipe in filteredRecipes" :key="recipe.id">
         <a-card hoverable class="recipe-card">
           <template #cover>
             <div class="recipe-cover">
@@ -64,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import axios from 'axios';
 
@@ -72,6 +81,7 @@ const recipes = ref([]);
 const loading = ref(true);
 const detailVisible = ref(false);
 const selectedRecipe = ref(null);
+const searchQuery = ref('');
 
 const getIngredientsSummary = (ingredients) => {
   const ingredientsList = ingredients.split('\n');
@@ -112,6 +122,22 @@ const fetchRecipes = async () => {
   }
 };
 
+const filteredRecipes = computed(() => {
+  if (!searchQuery.value) {
+    return recipes.value;
+  }
+  const query = searchQuery.value.toLowerCase();
+  return recipes.value.filter(recipe => 
+    recipe.title.toLowerCase().includes(query) ||
+    recipe.ingredients.toLowerCase().includes(query)
+  );
+});
+
+const onSearch = () => {
+  // 实时搜索，不需要额外处理
+  // 如果需要在输入完成后才搜索，可以在这里添加逻辑
+};
+
 onMounted(() => {
   fetchRecipes();
 });
@@ -134,6 +160,11 @@ onMounted(() => {
 .recipes-header h2 {
   margin: 0;
   color: #42b983;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
 }
 
 .recipe-card {
