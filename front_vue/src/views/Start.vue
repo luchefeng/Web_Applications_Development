@@ -273,11 +273,11 @@ const handleVersionSelect = (version) => {
   .main-title {
     font-size: 2em;
   }
-  
+
   .feature-section {
     padding: 40px 20px;
   }
-  
+
   .feature-text h2 {
     font-size: 1.5em;
   }
