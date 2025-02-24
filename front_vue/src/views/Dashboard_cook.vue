@@ -1,14 +1,12 @@
 <template>
   <div class="dashboard">
-    <!-- 個人信息區塊 -->
     <section class="user-info">
       <h1>欢迎，{{ user.username }}</h1>
     </section>
 
-    <!-- 功能模塊區塊 -->
     <section class="feature-section">
-      <a-row justify="center">
-        <a-col :span="16">
+      <a-row :gutter="[24, 24]" justify="center">
+        <a-col :span="8">
           <a-card hoverable @click="navigateTo('/ingredient-management')" class="feature-card">
             <template #cover>
               <img alt="ingredient management" src="../assets/ingredient-management.jpg" />
@@ -16,10 +14,8 @@
             <a-card-meta title="食材管理" description="智能管理您的食材库，让烹饪更加便捷高效。" />
           </a-card>
         </a-col>
-      </a-row>
 
-      <a-row justify="center">
-        <a-col :span="16">
+        <a-col :span="8">
           <a-card hoverable class="feature-card">
             <template #cover>
               <img alt="recipe recommendation" src="../assets/recipe-recommendation.jpg" />
@@ -27,10 +23,8 @@
             <a-card-meta title="菜谱推荐" description="基于您的偏好和现有食材，智能推荐最适合的菜谱。" />
           </a-card>
         </a-col>
-      </a-row>
 
-      <a-row justify="center">
-        <a-col :span="16">
+        <a-col :span="8">
           <a-card hoverable class="feature-card">
             <template #cover>
               <img alt="recipe browse" src="../assets/recipe-browse.jpg" />
@@ -81,10 +75,15 @@ const navigateTo = (path) => {
 
 .feature-section {
   margin-top: 20px;
+  max-width: 1200px;  /* 增加最大宽度以适应三列布局 */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
 }
 
 .feature-card {
-  margin-bottom: 24px; /* 增加卡片之间的垂直间距 */
+  height: 100%;  /* 确保所有卡片高度一致 */
+  margin-bottom: 0;  /* 移除底部间距 */
   transition: transform 0.3s;
 }
 
@@ -95,7 +94,7 @@ const navigateTo = (path) => {
 
 /* 设置卡片图片高度统一 */
 .feature-card :deep(.ant-card-cover img) {
-  height: 50px;
+  height: 180px;  /* 调整图片高度 */
   object-fit: cover;
 }
 
