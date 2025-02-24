@@ -6,6 +6,7 @@
       <a-form-item label="用户名">
         <a-input v-model:value="profileForm.username" disabled />
       </a-form-item>
+      </a-form-item>
 
       <a-form-item label="昵称">
         <a-input v-model:value="profileForm.profile.nickname" />
@@ -96,7 +97,7 @@ const fetchUserProfile = async () => {
     const response = await axios.get('http://localhost:5000/users/user-info', {
       withCredentials: true
     });
-    
+
     // 合并用户信息
     profileForm.value = {
       ...response.data,
@@ -156,7 +157,7 @@ const handlePasswordChange = async () => {
       oldPassword: passwordForm.value.oldPassword,
       newPassword: passwordForm.value.newPassword
     }, { withCredentials: true });
-    
+
     message.success('密码修改成功');
     showPasswordModal.value = false;
     passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };

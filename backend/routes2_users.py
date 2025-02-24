@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
-from models2 import db, User
+from models2 import db, User, UserProfile
 from werkzeug.security import generate_password_hash, check_password_hash
 from captcha.image import ImageCaptcha
 import random, string
@@ -170,8 +170,9 @@ def update_profile():
         # 更新用户资料
         if 'profile' in data:
             if not user.profile:
-                user.profile = UserProfile()
-            
+                user.profile = UserProfile(user_id=user.id)  # 添加 user_id
+                db.session.add(user.profile)  # 添加到 session
+
             profile_data = data['profile']
             user.profile.nickname = profile_data.get('nickname')
             user.profile.bio = profile_data.get('bio')
