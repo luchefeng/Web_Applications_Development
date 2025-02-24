@@ -1,8 +1,8 @@
 <template>
   <div class="login-container">
-    <h1 class="login-title">Login</h1>
+    <h1 class="login-title">登录</h1>
     <a-form :model="formState" name="normal_login" class="login-form" @finish="onFinish" @finishFailed="onFinishFailed">
-      <a-form-item label="Username" name="username" :rules="[{ required: true, message: '請輸入您的用戶名！' }]">
+      <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '請輸入您的用戶名！' }]">
         <a-input v-model:value="formState.username">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
@@ -10,7 +10,7 @@
         </a-input>
       </a-form-item>
 
-      <a-form-item label="Password" name="password" :rules="[{ required: true, message: '請輸入您的密碼！' }]">
+      <a-form-item label="密码" name="password" :rules="[{ required: true, message: '請輸入您的密碼！' }]">
         <a-input-password v-model:value="formState.password">
           <template #prefix>
             <LockOutlined class="site-form-item-icon" />
@@ -18,10 +18,10 @@
         </a-input-password>
       </a-form-item>
 
-      <a-form-item label="Captcha">
+      <a-form-item label="验证码">
         <div style="display: flex; align-items: center;">
           <img :src="captchaUrl" @click="fetchCaptcha" style="cursor: pointer; margin-right: 10px;">
-          <a-input v-model:value="formState.captcha" placeholder="Enter captcha">
+          <a-input v-model:value="formState.captcha" placeholder="输入验证码">
             <template #prefix>
               <SafetyOutlined class="site-form-item-icon" />
             </template>
@@ -31,19 +31,19 @@
 
       <a-form-item>
         <a-form-item name="remember" no-style>
-          <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+          <a-checkbox v-model:checked="formState.remember">记住我</a-checkbox>
         </a-form-item>
-        <a class="login-form-forgot" href="">Forgot password</a>
+        <a class="login-form-forgot" href="">忘记密码</a>
       </a-form-item>
 
       <a-form-item>
         <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
-          Log in
+          登录
         </a-button>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         <p v-if="successMessage" class="success">{{ successMessage }}</p>
-        Or
-        <router-link to="/register">Register</router-link>
+        或
+        <router-link to="/register">注册</router-link>
       </a-form-item>
     </a-form>
   </div>
