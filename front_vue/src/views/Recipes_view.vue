@@ -49,6 +49,7 @@
       :title="selectedRecipe?.title"
       width="600px"
       @cancel="closeDetails"
+      @ok="closeDetails"
     >
       <template v-if="selectedRecipe">
         <div class="recipe-detail">
