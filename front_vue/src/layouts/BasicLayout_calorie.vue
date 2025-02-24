@@ -28,7 +28,7 @@
                 </a-col>
                 <a-col flex="1">
                   <a-button type="primary" class="nav-button">
-                    <router-link to="/profile">我的资料</router-link>
+                    <router-link to="/recipes/add">上传菜谱</router-link>
                   </a-button>
                 </a-col>
               </nav>                 
