@@ -13,7 +13,7 @@
             <template #cover>
               <img alt="ingredient management" src="../assets/ingredient-management.jpg" />
             </template>
-            <a-card-meta title="食材管理" description="智能管理您的食材庫，讓烹飪更加便捷高效。" />
+            <a-card-meta title="食材管理" description="智能管理您的食材库，让烹饪更加便捷高效。" />
           </a-card>
         </a-col>
       </a-row>
@@ -24,7 +24,7 @@
             <template #cover>
               <img alt="recipe recommendation" src="../assets/recipe-recommendation.jpg" />
             </template>
-            <a-card-meta title="菜譜推薦" description="基於您的偏好和現有食材，智能推薦最適合的菜譜。" />
+            <a-card-meta title="菜谱推荐" description="基于您的偏好和现有食材，智能推荐最适合的菜谱。" />
           </a-card>
         </a-col>
       </a-row>
@@ -35,7 +35,7 @@
             <template #cover>
               <img alt="recipe browse" src="../assets/recipe-browse.jpg" />
             </template>
-            <a-card-meta title="菜譜瀏覽與搜索" description="海量菜譜資源，便捷的搜索功能，助您輕鬆找到心儀的美食。" />
+            <a-card-meta title="菜谱浏览与搜索" description="海量用户菜谱资源，便捷的搜索功能，助您轻松找到心仪的美食。" />
           </a-card>
         </a-col>
       </a-row>
