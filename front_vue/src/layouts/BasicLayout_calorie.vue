@@ -57,10 +57,12 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';  // 添加 store 引入
 import axios from 'axios';
 import { UserOutlined } from '@ant-design/icons-vue';
 
 const router = useRouter();
+const store = useStore();  // 初始化 store
 
 const handleLogout = async () => {
   try {

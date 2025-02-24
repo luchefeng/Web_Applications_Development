@@ -44,10 +44,15 @@ export default createStore({
     },
     
     logout({ commit }) {
+      // 清除所有状态
       commit('setUser', null);
       commit('setLoginStatus', false);
       commit('setLayout', 'BasicLayout');
+      
+      // 清除本地存储
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userLayout');
     },
     
     async initializeStore({ commit }) {

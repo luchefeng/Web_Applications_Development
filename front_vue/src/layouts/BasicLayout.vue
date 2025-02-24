@@ -39,10 +39,10 @@
                   </template>
                   <template v-else>
                     <a-button type="primary" class="custom-button">
-                      <router-link to="/register">Register</router-link>
+                      <router-link to="/register">注册</router-link>
                     </a-button>
                     <a-button type="primary" class="custom-button">
-                      <router-link to="/login">Login</router-link>
+                      <router-link to="/login">登录</router-link>
                     </a-button>
                   </template>
                 </nav>

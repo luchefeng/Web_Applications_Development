@@ -52,46 +52,33 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';  // 添加这行
 import axios from 'axios';
-import { UserOutlined } from '@ant-design/icons-vue';
 
 const router = useRouter();
+const store = useStore();  // 添加这行
 
 const handleLogout = async () => {
   try {
-    console.log('Sending logout request...');
     const response = await axios.post('http://localhost:5000/users/logout', {}, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      timeout: 5000 // 添加超时设置
+      withCredentials: true
     });
 
     if (response.status === 200) {
-      // 清除本地存储
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('user');
-      
-      // 更新 store
-      store.dispatch('logout');
-      
-      // 等待状态更新
-      await Promise.resolve();
+      // 使用 store action 清理状态
+      await store.dispatch('logout');
       
       // 跳转到首页
       await router.push('/');
       
-      // 重新加载页面以确保状态完全重置
       window.location.reload();
     }
   } catch (error) {
     console.error('Logout error:', error);
-    // 即使请求失败也清除本地状态
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user');
-    store.dispatch('logout');
-    router.push('/');
+    // 即使请求失败也清除状态
+    await store.dispatch('logout');
+    await router.push('/');
+    window.location.reload();
   }
 };
 
