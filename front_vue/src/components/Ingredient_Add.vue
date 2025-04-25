@@ -7,6 +7,7 @@
             </a-form-item>
             <a-form-item label="类别" name="category" :rules="[{ required: true, message: '请选择类别！' }]">
                 <a-select v-model:value="ingredientData.category">
+                    <a-select-option value="主食">主食</a-select-option>
                     <a-select-option value="蔬菜">蔬菜</a-select-option>
                     <a-select-option value="肉类">肉类</a-select-option>
                     <a-select-option value="调料">调料</a-select-option>
@@ -41,6 +42,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import eventBus from '../utils/eventBus.js';
 import dayjs from 'dayjs';
+import { watch } from 'vue';
 
 const ingredientData = ref({
     name: '',
@@ -52,6 +54,22 @@ const ingredientData = ref({
 });
 const successMessage = ref('');
 const errorMessage = ref('');
+
+const defaultShelfLifeMap = {
+    '主食': 5,    // 麵包、米飯等，約3-5天
+    '水果': 7,    // 水果如蘋果、梨等，一般在5-7天內最好食用
+    '蔬菜': 5,    // 一些易腐爛的蔬菜類，約2-5天
+    '肉类': 3,    // 鮮肉類，如豬肉、雞肉，建議3天內食用
+    '调料': 30,   // 一些開封後還能保存很長時間的調料
+    '其他': 15    // 其他食材，可以根據具體情況調整
+};
+
+// 監聽 category 的變化，自動設置保質期
+watch(() => ingredientData.value.category, (newCategory) => {
+    if (newCategory && defaultShelfLifeMap[newCategory] !== undefined) {
+        ingredientData.value.shelf_life = defaultShelfLifeMap[newCategory];
+    }
+});
 
 const formatDate = (date) => {
     return date? dayjs(date).format('YYYY-MM-DD') : null;

@@ -53,6 +53,8 @@ import axios from 'axios';
 import eventBus from '../utils/eventBus.js';
 import { Modal } from 'ant-design-vue';
 import dayjs from 'dayjs';
+import { Tooltip } from 'ant-design-vue';
+import { h } from 'vue';
 
 const columns = [
     { title: '食材名称', dataIndex: 'name', key: 'name' },
@@ -60,7 +62,33 @@ const columns = [
     { title: '数量', dataIndex: 'quantity', key: 'quantity' },
     { title: '保质期', dataIndex: 'shelf_life', key: 'shelf_life' },
     { title: '购买日期', dataIndex: 'purchase_date', key: 'purchase_date' },
-    { title: '操作', key: 'action' }
+    {
+        title: '过期时间',
+        dataIndex: 'expiry_date',
+        key: 'expiry_date',
+        customRender: ({ text, record }) => {
+            const today = dayjs();
+            const expiry = dayjs(text);
+            const diff = expiry.diff(today, 'day');
+            let color = 'inherit';
+            let tooltipText = null;
+
+            if (diff < 0) {
+                color = 'gray';
+                tooltipText = '已過期';
+            } else if (diff <= 2) {
+                color = 'red';
+                tooltipText = '即將過期';
+            }
+
+            return tooltipText
+                ? h(Tooltip, { title: tooltipText }, {
+                    default: () => h('span', { style: `color: ${color}` }, text)
+                })
+                : h('span', { style: `color: ${color}` }, text);
+        }
+    },
+    { title: '操作', key: 'action' },
 ];
 const ingredients = ref([]);
 const loading = ref(false);
@@ -81,8 +109,19 @@ const fetchIngredients = async () => {
         const response = await axios.get('http://localhost:5000/ingredient/get_all', {
             withCredentials: true
         });
-        console.log('获取到的食材数据:', response.data);
-        ingredients.value = Array.isArray(response.data) ? response.data : [];
+        const rawData = Array.isArray(response.data) ? response.data : [];
+
+        // ✅ 计算过期时间
+        ingredients.value = rawData.map(item => {
+            const purchaseDate = dayjs(item.purchase_date);
+            const expiryDate = item.shelf_life
+                ? purchaseDate.add(item.shelf_life, 'day').format('YYYY-MM-DD')
+                : '未知';
+            return {
+                ...item,
+                expiry_date: expiryDate
+            };
+        });
     } catch (error) {
         console.error('Failed to fetch ingredients:', error);
     } finally {
@@ -142,6 +181,8 @@ const handleEditOk = async () => {
             if (index !== -1) {
                 ingredients.value[index] = { ...editIngredientData.value };
                 ingredients.value[index].purchase_date = dayjs(editIngredientData.value.purchase_date).format('YYYY-MM-DD');
+                const expiryDate = dayjs(editIngredientData.value.purchase_date).add(editIngredientData.value.shelf_life, 'day').format('YYYY-MM-DD');
+                ingredients.value[index].expiry_date = expiryDate;
             }
             editModalVisible.value = false;
         } else {
