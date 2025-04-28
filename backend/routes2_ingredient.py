@@ -3,8 +3,56 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from models2 import db, Ingredient
 import logging
+import requests
+import os
 
 ingredient_bp = Blueprint('ingredient_bp', __name__, url_prefix='/ingredient')
+
+@ingredient_bp.route('/search_usda', methods=['GET'])
+@login_required
+def search_usda():
+    try:
+        query = request.args.get('query')
+        if not query:
+            return jsonify({'message': 'No query provided'}), 400
+
+        # 读取.env环境变量里的USDA_API_KEY
+        usda_api_key = os.getenv('USDA_API_KEY')
+        if not usda_api_key:
+            return jsonify({'message': 'USDA API key not set on server'}), 500
+
+        usda_url = f'https://api.nal.usda.gov/fdc/v1/foods/search?query={query}&api_key={usda_api_key}'
+        response = requests.get(usda_url)
+        response.raise_for_status()
+
+        result = response.json()
+
+        # 解析卡路里
+        if not result.get('foods'):
+            return jsonify({'message': 'No food found'}), 404
+
+        food = result['foods'][0]  # 取第一个结果
+        description = food.get('description', 'Unknown food')
+        nutrients = food.get('foodNutrients', [])
+
+        unit_calories = None
+        for nutrient in nutrients:
+            if nutrient.get('nutrientName') == 'Energy' and nutrient.get('unitName') == 'KCAL':
+                unit_calories = nutrient.get('value')
+                break
+
+        if unit_calories is None:
+            return jsonify({'message': 'No calorie information found'}), 404
+
+        return jsonify({
+            'name': description,
+            'unit_calories': unit_calories
+        }), 200
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': 'USDA API request failed', 'error': str(e)}), 500
+    except Exception as e:
+        return jsonify({'message': 'Server error', 'error': str(e)}), 500
 
 # 添加食材
 @ingredient_bp.route('/add', methods=['POST'])

@@ -1,8 +1,15 @@
+# Python 缓存文件
 __pycache__/
 *.pyc
 
-# 忽略 .idea 文件夾
+# IDE 配置文件
 .idea/
 
-# 忽略 backend/flask_session_cache 文件夾
+# Flask Session 缓存
 backend/flask_session_cache/
+
+# 环境变量文件
+.env
+
+# (可选) 如果将来用到 VSCode，可以加
+.vscode/

@@ -59,13 +59,29 @@ import { h } from 'vue';
 const columns = [
     { title: '食材名称', dataIndex: 'name', key: 'name' },
     { title: '类别', dataIndex: 'category', key: 'category' },
-    { title: '数量', dataIndex: 'quantity', key: 'quantity' },
-    { title: '保质期', dataIndex: 'shelf_life', key: 'shelf_life' },
-    { title: '购买日期', dataIndex: 'purchase_date', key: 'purchase_date' },
+    { title: '数量（g）', dataIndex: 'quantity', key: 'quantity', align: 'center' },
+    { title: '单位卡路里（kcal/100g）', dataIndex: 'unit_calories', key: 'unit_calories', align: 'center' },
+    {
+        title: '总卡路里（kcal）',
+        key: 'total_calories',
+        align: 'center',  // 添加这个属性
+        customRender: ({ record }) => {
+            const quantityNumber = parseFloat(record.quantity);
+            if (isNaN(quantityNumber)) {
+                return '无法计算';
+            }
+            // 正确计算：数量(g) / 100 × 单位卡路里(kcal/100g)
+            const totalCalories = (quantityNumber / 100) * record.unit_calories;
+            return Math.round(totalCalories);  // 取整，不保留小数
+        }
+    },
+    { title: '保质期（天）', dataIndex: 'shelf_life', key: 'shelf_life', align: 'center' },
+    { title: '购买日期', dataIndex: 'purchase_date', key: 'purchase_date', align: 'center' },
     {
         title: '过期时间',
         dataIndex: 'expiry_date',
         key: 'expiry_date',
+        align: 'center',  // 添加这个属性
         customRender: ({ text, record }) => {
             const today = dayjs();
             const expiry = dayjs(text);
@@ -88,7 +104,7 @@ const columns = [
                 : h('span', { style: `color: ${color}` }, text);
         }
     },
-    { title: '操作', key: 'action' },
+    { title: '操作', key: 'action', align: 'center' },
 ];
 const ingredients = ref([]);
 const loading = ref(false);
