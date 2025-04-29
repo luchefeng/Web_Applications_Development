@@ -4,7 +4,7 @@
     <section class="version-select">
       <h1 class="main-title animate__animated animate__fadeIn">
         选择适合您的版本
-        <span class="subtitle">开启您的美食之旅</span>
+        <span class="subtitle">开启您的健康饮食之旅</span>
       </h1>
       <a-row :gutter="[24, 24]" justify="center">
         <a-col :span="8" class="feature-list">
