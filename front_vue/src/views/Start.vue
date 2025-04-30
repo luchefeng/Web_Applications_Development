@@ -29,7 +29,7 @@
                 <li>菜谱浏览</li>
               </ul>
             </template>
-            <a-card-meta title="美食管理版" description="适合只想探索美食的用户" />
+            <a-card-meta title="仅美食管理版" description="适合想探索美食的用户" />
           </a-card>
         </a-col>
       </a-row>
