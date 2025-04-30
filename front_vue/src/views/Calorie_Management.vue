@@ -64,7 +64,7 @@
 
     <!-- 顯示卡路里目標 -->
     <div v-if="calorieGoal !== null" class="result-section">
-      <h3>每日卡路里目标: {{ calorieGoal }} 大卡</h3>
+      <h3>每日卡路里目标: {{ calorieGoal.toFixed(2) }} 大卡</h3>
     </div>
 
     <!-- 卡路里计算器 -->

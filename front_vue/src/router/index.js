@@ -77,19 +77,22 @@ const router = createRouter({
   routes,
 });
 
+// 路由守卫：检查登录状态
 router.beforeEach(async (to, from, next) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  
-  // 需要登录的路由
+
+  // 定义需要登录的路由
   const requiresAuth = ['/dashboard', '/calorie-management', '/profile'];
-  
+
   if (requiresAuth.includes(to.path) && !isLoggedIn) {
+    // 如果未登录且访问需要权限的页面，跳转到登录页
     next('/login');
   } else if (!isLoggedIn && from.path === '/dashboard') {
     // 确保状态更新后再跳转
     await Promise.resolve();
     next('/');
   } else {
+    // 允许访问
     next();
   }
 });

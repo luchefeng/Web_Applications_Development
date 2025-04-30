@@ -1,15 +1,20 @@
 import { createStore } from 'vuex';
+import axios from 'axios';
 
 export default createStore({
   state: {
+    // 用户信息
     user: JSON.parse(localStorage.getItem('user')) || null,
+    // 是否登录
+    isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
+    // 当前布局
+    layout: localStorage.getItem('userLayout') || 'BasicLayout',
+    // 其他状态
     recipes: [],
     articles: [],
-    isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
-    layout: localStorage.getItem('userLayout') || 'BasicLayout' // 从localStorage读取布局
   },
-  
   mutations: {
+    // 设置用户信息
     setUser(state, user) {
       state.user = user;
       if (user) {
@@ -18,52 +23,50 @@ export default createStore({
         localStorage.removeItem('user');
       }
     },
-    setRecipes(state, recipes) {
-      state.recipes = recipes;
-    },
-    setArticles(state, articles) {
-      state.articles = articles;
-    },
+    // 设置登录状态
     setLoginStatus(state, status) {
       state.isLoggedIn = status;
       localStorage.setItem('isLoggedIn', status);
     },
+    // 设置布局
     setLayout(state, layoutName) {
       state.layout = layoutName;
-      localStorage.setItem('userLayout', layoutName); // 保存布局到localStorage
-    }
+      localStorage.setItem('userLayout', layoutName);
+    },
+    // 设置食谱
+    setRecipes(state, recipes) {
+      state.recipes = recipes;
+    },
+    // 设置文章
+    setArticles(state, articles) {
+      state.articles = articles;
+    },
   },
-  
   actions: {
+    // 登录操作
     login({ commit }, user) {
       commit('setUser', user);
       commit('setLoginStatus', true);
-      // 根据用户版本设置布局
       const layoutType = user.calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
       commit('setLayout', layoutType);
     },
-    
+    // 登出操作
     logout({ commit }) {
-      // 清除所有状态
       commit('setUser', null);
       commit('setLoginStatus', false);
       commit('setLayout', 'BasicLayout');
-      
-      // 清除本地存储
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
       localStorage.removeItem('userLayout');
     },
-    
+    // 初始化 Store
     async initializeStore({ commit }) {
       try {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         if (isLoggedIn) {
           const response = await axios.get('http://localhost:5000/users/user-info', {
-            withCredentials: true
+            withCredentials: true,
           });
-          
-          // 根据用户信息设置正确的布局
           const layoutType = response.data.calorie_version ? 'BasicLayout_calorie' : 'BasicLayout_cook';
           commit('setLayout', layoutType);
           commit('setLoginStatus', true);
@@ -73,28 +76,32 @@ export default createStore({
           commit('setLoginStatus', false);
         }
       } catch (error) {
+        console.error('初始化 Store 失败:', error);
         commit('setLayout', 'BasicLayout');
         commit('setLoginStatus', false);
       }
     },
-    
+    // 检查登录状态
     async checkAuthStatus({ commit }) {
       try {
         const response = await axios.get('http://localhost:5000/users/user-info', {
-          withCredentials: true
+          withCredentials: true,
         });
         commit('setUser', response.data);
         commit('setLoginStatus', true);
       } catch (error) {
+        console.error('检查登录状态失败:', error);
         commit('setUser', null);
         commit('setLoginStatus', false);
       }
-    }
+    },
   },
-  
   getters: {
-    isLoggedIn: state => state.isLoggedIn,
-    currentLayout: state => state.layout,
-    currentUser: state => state.user
-  }
+    // 获取登录状态
+    isLoggedIn: (state) => state.isLoggedIn,
+    // 获取当前布局
+    currentLayout: (state) => state.layout,
+    // 获取当前用户
+    currentUser: (state) => state.user,
+  },
 });
