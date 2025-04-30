@@ -26,10 +26,11 @@
         </a-input-password>
       </a-form-item>
 
-      <a-form-item label="是否选择卡路里管理版本" name="calorieVersion">
-        <a-checkbox v-model:checked="formState.calorieVersion">
-          {{ formState.calorieVersion ? '选择卡路里管理版' : '选择菜谱浏览版' }}
-        </a-checkbox>
+      <a-form-item label="选择版本" name="calorieVersion">
+        <a-radio-group v-model:value="formState.calorieVersion">
+          <a-radio value=true>卡路里管理版</a-radio>
+          <a-radio value=false>美食管理版</a-radio>
+        </a-radio-group>
       </a-form-item>
 
       <a-form-item>
@@ -70,7 +71,7 @@ const onFinish = async () => {
       username: formState.username,
       email: formState.email,
       password: formState.password,
-      calorieVersion: formState.calorieVersion, // 确保发送此字段
+      calorieVersion: formState.calorieVersion === "true", // 确保发送此字段且确保发送布尔值
     });
 
     console.log('注册成功:', response.data);
