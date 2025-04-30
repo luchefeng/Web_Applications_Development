@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <h1 class="register-title">注册</h1>
-    <a-form :model="formState" name="normal_register" class="register-form" @finish="onFinish" @finishFailed="onFinishFailed">
+    <a-form :model="formState" name="normal_register" class="register-form" @finish="registerUser" @finishFailed="onFinishFailed">
       <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入您的用户名！' }]">
         <a-input v-model:value="formState.username">
           <template #prefix>
@@ -26,10 +26,15 @@
         </a-input-password>
       </a-form-item>
 
-      <a-form-item label="是否选择卡路里管理版本" name="calorieVersion">
-        <a-checkbox v-model:checked="formState.calorieVersion">
-          {{ formState.calorieVersion ? '选择卡路里管理版' : '选择菜谱浏览版' }}
-        </a-checkbox>
+      <a-form-item name="calorieVersion">
+        <a-row>
+          <a-col :span="12">
+            <a-checkbox v-model:checked="formState.calorieVersion">卡路里管理版本</a-checkbox>
+          </a-col>
+          <a-col :span="12">
+            <a-checkbox v-model:checked="calorieVersionOpposite">菜谱推荐版本</a-checkbox>
+          </a-col>
+        </a-row>
       </a-form-item>
 
       <a-form-item>
@@ -46,7 +51,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons-vue';
@@ -58,13 +63,23 @@ const formState = reactive({
   username: '',
   email: '',
   password: '',
-  calorieVersion: false, // 默认不选择卡路里管理版本
+  calorieVersion: true, // 默认选择卡路里管理版本
+});
+
+// 计算属性：反转 calorieVersion
+const calorieVersionOpposite = computed({
+  get: () => !formState.value.calorieVersion,
+  set: (value) => {
+    formState.value.calorieVersion = !value;
+  },
 });
 
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const onFinish = async () => {
+let isMounted = true;
+
+const registerUser = async () => {
   try {
     const response = await axios.post('http://localhost:5000/users/register', {
       username: formState.username,
@@ -73,21 +88,29 @@ const onFinish = async () => {
       calorieVersion: formState.calorieVersion, // 确保发送此字段
     });
 
-    console.log('注册成功:', response.data);
-    errorMessage.value = '';
-    successMessage.value = '注册成功！请登录。';
+    if (isMounted) {
+      console.log('注册成功:', response.data);
+      errorMessage.value = '';
+      successMessage.value = '注册成功！请登录。';
 
-    // 跳转到登录页面，并传递版本信息
-    router.push({
-      path: '/login',
-      query: { version: formState.calorieVersion ? 'calorie' : 'cook' }
-    });
+      // 跳转到登录页面，并传递版本信息
+      router.push({
+        path: '/login',
+        query: { version: formState.calorieVersion ? 'calorie' : 'cook' }
+      });
+    }
   } catch (error) {
-    console.error('注册失败:', error);
-    errorMessage.value = error.response?.data?.message || '注册失败，请重试。';
-    successMessage.value = '';
+    if (isMounted) {
+      console.error('注册失败:', error);
+      errorMessage.value = error.response?.data?.message || '注册失败，请重试。';
+      successMessage.value = '';
+    }
   }
 };
+
+onUnmounted(() => {
+  isMounted = false;
+});
 
 const onFinishFailed = errorInfo => {
   console.log('Failed:', errorInfo);
