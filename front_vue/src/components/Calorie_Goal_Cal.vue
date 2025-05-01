@@ -54,6 +54,12 @@
             <a-input-number v-model:value="localCalorieData.timeframe" :min="1" :max="365" style="width: 100%" />
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <!-- 根据表单现有的体重和身高自动计算BMI，实时显示结果 -->
+          <a-form-item label="BMI (实时计算)">
+            <a-input v-model:value="bmi" disabled style="width: 100%" />
+          </a-form-item>
+        </a-col>
       </a-row>
       <a-form-item>
         <a-button type="primary" html-type="submit" :loading="loading">计算每日卡路里目标</a-button>
@@ -71,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 
 const localCalorieData = ref({
@@ -88,6 +94,20 @@ const localCalorieGoal = ref(null);
 const loading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
+const bmi = ref(''); // 用于实时显示 BMI
+
+// 监听体重和身高的变化，实时计算 BMI
+watch(
+  () => [localCalorieData.value.height, localCalorieData.value.current_weight],
+  ([height, weight]) => {
+    if (height > 0 && weight > 0) {
+      const heightInMeters = height / 100;
+      bmi.value = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+    } else {
+      bmi.value = '';
+    }
+  }
+);
 
 const onCalculateCalorieGoal = async () => {
   loading.value = true;
@@ -112,6 +132,10 @@ const onFinishFailed = (errorInfo) => {
 
 <style scoped>
 .alert-message {
+  margin-top: 16px;
+}
+
+.result-section {
   margin-top: 16px;
 }
 </style>
