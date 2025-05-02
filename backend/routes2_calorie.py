@@ -33,7 +33,7 @@ def set_calorie_goal():
         tdee = calculate_tdee(bmr, activity_level)
         total_calorie_deficit = (current_weight - target_weight) * 7700
         daily_calorie_deficit = total_calorie_deficit / timeframe
-        daily_calorie_goal = tdee - daily_calorie_deficit
+        daily_calorie_goal = round(tdee - daily_calorie_deficit, 2)
 
         if daily_calorie_goal < 1200:
             return jsonify({'message': f'警告：每日卡路里目标（{daily_calorie_goal} 大卡）过低，可能不健康。请调整减重计划。'}), 400
@@ -46,6 +46,28 @@ def set_calorie_goal():
     except Exception as e:
         print('Error in set_calorie_goal:', traceback.format_exc())  # 打印详细的错误堆栈信息
         return jsonify({'message': '設置卡路里目標失敗，請稍後再試。'}), 500
+
+# 保存卡路里目标
+@calorie_bp.route('/save_calorie_goal', methods=['POST'])
+@login_required
+def save_calorie_goal():
+    try:
+        data = request.json
+        # Save all form data to the user's profile
+        current_user.gender = data.get('gender')
+        current_user.age = data.get('age')
+        current_user.height = data.get('height')
+        current_user.current_weight = data.get('current_weight')
+        current_user.target_weight = data.get('target_weight')
+        current_user.activity_level = data.get('activity_level')
+        current_user.timeframe = data.get('timeframe')
+        current_user.calorie_goal = data.get('calorie_goal')
+
+        db.session.commit()
+        return jsonify({'message': '卡路里目标保存成功！'}), 200
+    except Exception as e:
+        print('Error in save_calorie_goal:', traceback.format_exc())
+        return jsonify({'message': '保存卡路里目标失败，请稍后再试。'}), 500
 
 # 计算 BMR
 def calculate_bmr(gender, weight, height, age):
@@ -156,3 +178,23 @@ def recommend_recipes(calories, meal_type):
 def recipe_fits_criteria(recipe, calories, meal_type):
     # 實現判斷菜譜是否符合卡路里範圍和餐別的邏輯
     return True  # 示例中所有菜譜都符合
+
+@calorie_bp.route('/get_saved_data', methods=['GET'])
+@login_required
+def get_saved_data():
+    try:
+        # Retrieve the user's saved calorie data
+        saved_data = {
+            'gender': current_user.gender,
+            'age': current_user.age,
+            'height': current_user.height,
+            'current_weight': current_user.current_weight,
+            'target_weight': current_user.target_weight,
+            'activity_level': current_user.activity_level,
+            'timeframe': current_user.timeframe,
+            'calorie_goal': current_user.calorie_goal
+        }
+        return jsonify({'message': '获取保存的数据成功！', 'data': saved_data}), 200
+    except Exception as e:
+        print('Error in get_saved_data:', traceback.format_exc())
+        return jsonify({'message': '获取保存的数据失败，请稍后再试。'}), 500

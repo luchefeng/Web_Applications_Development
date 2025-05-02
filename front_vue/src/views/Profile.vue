@@ -131,6 +131,11 @@ const handleSubmit = async () => {
 
     await axiosInstance.put('/users/profile', updateData);
     message.success('保存成功');
+
+    // 更新卡路里目标到界面
+    if (profileForm.value.calorie_version) {
+      profileForm.value.calorie_goal = updateData.calorie_goal;
+    }
   } catch (error) {
     message.error('保存失败');
     console.error('Error updating profile:', error);

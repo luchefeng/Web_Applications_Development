@@ -56,19 +56,34 @@
         </a-col>
         <a-col :span="12">
           <!-- 根据表单现有的体重和身高自动计算BMI，实时显示结果 -->
-          <a-form-item label="BMI (实时计算)">
+          <a-form-item label="BMI (自动计算)">
             <a-input v-model:value="bmi" disabled style="width: 100%" />
           </a-form-item>
         </a-col>
       </a-row>
-      <a-form-item>
-        <a-button type="primary" html-type="submit" :loading="loading">计算每日卡路里目标</a-button>
-      </a-form-item>
+      <a-row>
+        <a-col :span="12">
+          <h3>当前每日卡路里目标: {{ Number(localCalorieGoal).toFixed(2) }} 大卡</h3>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item>
+            <a-button type="primary" html-type="submit" :loading="loading">重新计算</a-button>
+          </a-form-item>
+        </a-col>
+      </a-row>
     </a-form>
 
     <!-- 顯示卡路里目標 -->
-    <div v-if="localCalorieGoal !== null" class="result-section">
-      <h3>每日卡路里目标: {{ Number(localCalorieGoal).toFixed(2) }} 大卡</h3>
+    <div v-if="showCalorieGoal" class="result-section">
+      <a-row>
+        <a-col :span="12">
+          <h3>每日卡路里目标: {{ Number(localCalorieGoal).toFixed(2) }} 大卡</h3>
+        </a-col>
+        <a-col :span="12">
+          <!-- 这里可以添加一个按钮，允许用户将目标保存到数据库添加成功之后同样出现1s弹窗 -->
+          <a-button type="default" @click="onSaveCalorieGoal" :loading="saving">保存目标</a-button>
+        </a-col>
+      </a-row>
     </div>
 
     <a-alert v-if="successMessage" :message="successMessage" type="success" show-icon closable class="alert-message" />
@@ -87,14 +102,19 @@ const localCalorieData = ref({
   current_weight: 70,
   target_weight: 65,
   activity_level: '中度活动',
-  timeframe: 60
+  timeframe: 60,
+  bmi: 22.86,
+  calorie_goal: 1952.65
 });
 
-const localCalorieGoal = ref(null);
+const localCalorieGoal = ref(localCalorieData.value.calorie_goal); // 设置初始值为 localCalorieData.calorie_goal
 const loading = ref(false);
+const saving = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 const bmi = ref(''); // 用于实时显示 BMI
+const profileForm = ref({ calorie_goal: null }); // 用户的个人资料表单
+const showCalorieGoal = ref(false); // Control visibility of the calorie goal section
 
 // 监听体重和身高的变化，实时计算 BMI
 watch(
@@ -116,12 +136,27 @@ const onCalculateCalorieGoal = async () => {
     localCalorieGoal.value = response.data.data.daily_calorie_goal;
     successMessage.value = '卡路里目标计算成功！';
     errorMessage.value = '';
+    showCalorieGoal.value = true; // Show the calorie goal section
     setTimeout(() => (successMessage.value = ''), 1000); // 3 秒后清除消息
   } catch (error) {
     errorMessage.value = error.response?.data?.message || '计算卡路里目标失败，请稍后再试。';
     successMessage.value = '';
   } finally {
     loading.value = false;
+  }
+};
+
+const onSaveCalorieGoal = async () => {
+  saving.value = true;
+  try {
+    const response = await axios.post('http://localhost:5000/calorie/save_calorie_goal', localCalorieData.value, { withCredentials: true });
+    successMessage.value = '卡路里目标保存成功！';
+    setTimeout(() => (successMessage.value = ''), 1000); // 1 秒后清除消息
+    showCalorieGoal.value = false; // Hide the calorie goal section
+  } catch (error) {
+    errorMessage.value = error.response?.data?.message || '保存卡路里目标失败，请稍后再试。';
+  } finally {
+    saving.value = false;
   }
 };
 
