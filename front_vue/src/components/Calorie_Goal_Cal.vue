@@ -92,22 +92,22 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
+
 const localCalorieData = ref({
-  gender: '男',
-  age: 25,
-  height: 175,
-  current_weight: 70,
-  target_weight: 65,
+  gender: '',
+  age: '',
+  height: '',
+  current_weight: '',
+  target_weight: '',
   activity_level: '中度活动',
-  timeframe: 60,
-  bmi: 22.86,
-  calorie_goal: 1952.65
+  timeframe: "",
+  calorie_goal: 2000 // Set a reasonable default
 });
 
-const localCalorieGoal = ref(localCalorieData.value.calorie_goal); // 设置初始值为 localCalorieData.calorie_goal
+const localCalorieGoal = ref(2000); // Default value until data is loaded
 const loading = ref(false);
 const saving = ref(false);
 const errorMessage = ref('');
@@ -116,16 +116,66 @@ const bmi = ref(''); // 用于实时显示 BMI
 const profileForm = ref({ calorie_goal: null }); // 用户的个人资料表单
 const showCalorieGoal = ref(false); // Control visibility of the calorie goal section
 
+// Create a separate function to calculate BMI for reusability
+const calculateBMI = (height, weight) => {
+  if (height > 0 && weight > 0) {
+    const heightInMeters = height / 100;
+    return (weight / (heightInMeters * heightInMeters)).toFixed(2);
+  }
+  return '';
+};
+
+// Fetch saved data when the component is mounted
+onMounted(async () => {
+  try {
+    // First fetch user profile info to get the latest calorie goal
+    const profileResponse = await axios.get('http://localhost:5000/users/user-info', { 
+      withCredentials: true 
+    });
+    
+    if (profileResponse.data && profileResponse.data.calorie_goal) {
+      localCalorieGoal.value = profileResponse.data.calorie_goal;
+    }
+    
+    // Then fetch detailed calorie data if available
+    const calorieResponse = await axios.get('http://localhost:5000/calorie/get_saved_data', { 
+      withCredentials: true 
+    });
+    
+    if (calorieResponse.data && calorieResponse.data.data) {
+      const userData = calorieResponse.data.data;
+      
+      // Update all fields with saved data
+      Object.keys(userData).forEach(key => {
+        if (userData[key] !== null && userData[key] !== undefined) {
+          localCalorieData.value[key] = userData[key];
+        }
+      });
+      
+      // Ensure the calorie_goal is set from the most up-to-date source
+      if (userData.calorie_goal) {
+        localCalorieGoal.value = userData.calorie_goal;
+      }
+      
+      // Always update the form data with the current goal
+      localCalorieData.value.calorie_goal = localCalorieGoal.value;
+    }
+    
+    // Calculate BMI after all data is loaded
+    bmi.value = calculateBMI(localCalorieData.value.height, localCalorieData.value.current_weight);
+    
+  } catch (error) {
+    console.error('Failed to fetch saved data:', error);
+    // Even in case of error, calculate BMI with default values
+    bmi.value = calculateBMI(localCalorieData.value.height, localCalorieData.value.current_weight);
+  }
+});
+
 // 监听体重和身高的变化，实时计算 BMI
 watch(
   () => [localCalorieData.value.height, localCalorieData.value.current_weight],
   ([height, weight]) => {
-    if (height > 0 && weight > 0) {
-      const heightInMeters = height / 100;
-      bmi.value = (weight / (heightInMeters * heightInMeters)).toFixed(2);
-    } else {
-      bmi.value = '';
-    }
+    bmi.value = calculateBMI(height, weight);
   }
 );
 
@@ -134,10 +184,12 @@ const onCalculateCalorieGoal = async () => {
   try {
     const response = await axios.post('http://localhost:5000/calorie/set_calorie_goal', localCalorieData.value, { withCredentials: true });
     localCalorieGoal.value = response.data.data.daily_calorie_goal;
+    // Update the calorie_goal in localCalorieData 
+    localCalorieData.value.calorie_goal = localCalorieGoal.value;
     successMessage.value = '卡路里目标计算成功！';
     errorMessage.value = '';
     showCalorieGoal.value = true; // Show the calorie goal section
-    setTimeout(() => (successMessage.value = ''), 1000); // 3 秒后清除消息
+    setTimeout(() => (successMessage.value = ''), 1000); // 1 秒后清除消息
   } catch (error) {
     errorMessage.value = error.response?.data?.message || '计算卡路里目标失败，请稍后再试。';
     successMessage.value = '';
@@ -149,7 +201,19 @@ const onCalculateCalorieGoal = async () => {
 const onSaveCalorieGoal = async () => {
   saving.value = true;
   try {
-    const response = await axios.post('http://localhost:5000/calorie/save_calorie_goal', localCalorieData.value, { withCredentials: true });
+    // Make sure the calorie_goal field is updated with the calculated value
+    localCalorieData.value.calorie_goal = localCalorieGoal.value;
+    
+    // Save to the calorie goal endpoint
+    await axios.post('http://localhost:5000/calorie/save_calorie_goal', 
+                                     localCalorieData.value, 
+                                     { withCredentials: true });
+    
+    // Also update the user profile with the calorie goal to ensure consistency
+    await axios.put('http://localhost:5000/users/profile', 
+                   { calorie_goal: localCalorieGoal.value }, 
+                   { withCredentials: true });
+    
     successMessage.value = '卡路里目标保存成功！';
     setTimeout(() => (successMessage.value = ''), 1000); // 1 秒后清除消息
     showCalorieGoal.value = false; // Hide the calorie goal section

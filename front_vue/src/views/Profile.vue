@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onActivated } from 'vue';
 import { message } from 'ant-design-vue';
 import axios from 'axios';  // 使用默认的 Axios 引入
 
@@ -175,6 +175,11 @@ const handlePasswordCancel = () => {
   showPasswordModal.value = false;
   passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };
 };
+
+// Add onActivated hook to refresh data when component is shown (for keep-alive)
+onActivated(() => {
+  fetchUserProfile();
+});
 
 onMounted(() => {
   fetchUserProfile();
