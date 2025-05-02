@@ -5,54 +5,147 @@ from models2 import db, Ingredient
 import logging
 import requests
 import os
+import random
+from hashlib import md5
 
 ingredient_bp = Blueprint('ingredient_bp', __name__, url_prefix='/ingredient')
+
 
 @ingredient_bp.route('/search_usda', methods=['GET'])
 @login_required
 def search_usda():
     try:
         query = request.args.get('query')
+        print(f"[DEBUG] Received query: {query}")
         if not query:
+            print("[ERROR] No query provided")
             return jsonify({'message': 'No query provided'}), 400
 
-        # 读取.env环境变量里的USDA_API_KEY
+        # 保存原始查询
+        original_query = query
+
+        # 非ASCII字符翻译处理
+        if not query.isascii():
+            print("[DEBUG] Detected non-ASCII characters, attempting translation...")
+
+            # 百度翻译API配置（硬编码测试版）
+            appid = os.getenv('BAIDU_TRANSLATE_APPID')
+            appkey = os.getenv('BAIDU_TRANSLATE_APPKEY')
+
+            # 生成签名
+            salt = str(random.randint(32768, 65536))
+            sign_str = f"{appid}{query}{salt}{appkey}"
+            sign = md5(sign_str.encode('utf-8')).hexdigest()
+
+            print(f"[DEBUG] 签名原始字符串: {sign_str}")
+            print(f"[DEBUG] 生成的MD5签名: {sign}")
+
+            # 构建请求
+            url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
+            payload = {
+                'q': query,
+                'from': 'auto',
+                'to': 'en',
+                'appid': appid,
+                'salt': salt,
+                'sign': sign
+            }
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept-Encoding': 'utf-8'
+            }
+
+            try:
+                # 关键修改：使用data而非params，并添加超时
+                response = requests.post(
+                    url,
+                    data=payload,
+                    headers=headers,
+                    timeout=10
+                )
+                print(f"[DEBUG] Baidu API response status: {response.status_code}")
+                print(f"[DEBUG] Baidu API response content: {response.text}")
+
+                # 处理响应
+                result = response.json()
+                if 'error_code' in result:
+                    error_msg = result.get('error_msg', 'Unknown error')
+                    print(f"[ERROR] Baidu API error: {error_msg}")
+                    return jsonify({
+                        'message': f'Translation failed: {error_msg}',
+                        'error': result
+                    }), 500
+
+                if not result.get('trans_result'):
+                    print("[ERROR] Translation failed: empty result")
+                    return jsonify({'message': 'Translation failed'}), 500
+
+                query = result['trans_result'][0]['dst']
+                print(f"[DEBUG] Successfully translated to: {query}")
+
+            except requests.exceptions.RequestException as e:
+                print(f"[ERROR] Request to Baidu API failed: {str(e)}")
+                return jsonify({
+                    'message': 'Request to translation service failed',
+                    'error': str(e)
+                }), 500
+
+        # USDA API查询
+        print(f"[DEBUG] Preparing USDA query for: {query}")
         usda_api_key = os.getenv('USDA_API_KEY')
         if not usda_api_key:
-            return jsonify({'message': 'USDA API key not set on server'}), 500
+            print("[ERROR] USDA API key missing")
+            return jsonify({'message': 'USDA API key not configured'}), 500
 
-        usda_url = f'https://api.nal.usda.gov/fdc/v1/foods/search?query={query}&api_key={usda_api_key}'
-        response = requests.get(usda_url)
-        response.raise_for_status()
+        # 编码查询参数
+        encoded_query = requests.utils.quote(query)
+        usda_url = f'https://api.nal.usda.gov/fdc/v1/foods/search?query={encoded_query}&api_key={usda_api_key}'
+        print(f"[DEBUG] USDA API URL: {usda_url}")
 
-        result = response.json()
+        try:
+            # USDA请求
+            response = requests.get(usda_url, timeout=10)
+            print(f"[DEBUG] USDA API response status: {response.status_code}")
 
-        # 解析卡路里
-        if not result.get('foods'):
-            return jsonify({'message': 'No food found'}), 404
+            result = response.json()
+            print(f"[DEBUG] USDA response foods count: {len(result.get('foods', []))}")
 
-        food = result['foods'][0]  # 取第一个结果
-        description = food.get('description', 'Unknown food')
-        nutrients = food.get('foodNutrients', [])
+            if not result.get('foods'):
+                print("[DEBUG] No food found in USDA response")
+                return jsonify({'message': 'No food found'}), 404
 
-        unit_calories = None
-        for nutrient in nutrients:
-            if nutrient.get('nutrientName') == 'Energy' and nutrient.get('unitName') == 'KCAL':
-                unit_calories = nutrient.get('value')
-                break
+            # 提取营养信息
+            food = result['foods'][0]
+            response_data = {
+                'original_query': original_query,
+                'translated_query': query if original_query != query else None,
+                'name': food.get('description', 'Unknown food'),
+                'unit_calories': next(
+                    (n['value'] for n in food.get('foodNutrients', [])
+                     if n.get('nutrientName') == 'Energy' and n.get('unitName') == 'KCAL'),
+                    None
+                )
+            }
 
-        if unit_calories is None:
-            return jsonify({'message': 'No calorie information found'}), 404
+            if response_data['unit_calories'] is None:
+                print("[DEBUG] No calorie information found")
+                return jsonify({'message': 'No calorie information found'}), 404
 
-        return jsonify({
-            'name': description,
-            'unit_calories': unit_calories
-        }), 200
+            return jsonify(response_data), 200
 
-    except requests.exceptions.RequestException as e:
-        return jsonify({'message': 'USDA API request failed', 'error': str(e)}), 500
+        except requests.exceptions.RequestException as e:
+            print(f"[ERROR] USDA API request failed: {str(e)}")
+            return jsonify({
+                'message': 'Request to USDA API failed',
+                'error': str(e)
+            }), 500
+
     except Exception as e:
-        return jsonify({'message': 'Server error', 'error': str(e)}), 500
+        print(f"[CRITICAL] Unexpected error: {str(e)}", exc_info=True)
+        return jsonify({
+            'message': 'Server error',
+            'error': str(e)
+        }), 500
 
 # 添加食材
 @ingredient_bp.route('/add', methods=['POST'])
