@@ -11,6 +11,7 @@
       @finish-failed="onFinishFailed"
     />
 
+<<<<<<< Updated upstream
     <!-- 卡路里计算器 -->
     <calorie-food-cal 
       v-model:calculatorData="calculatorData"
@@ -29,6 +30,8 @@
       </ul>
     </div>
 
+=======
+>>>>>>> Stashed changes
     <!-- 卡路里攝入記錄 -->
     <calorie-tracker 
       v-model:intakeData="intakeData"
@@ -65,10 +68,16 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+<<<<<<< Updated upstream
 import CalorieGoalCal from '@/components/Calorie_Goal_Cal.vue';
 import CalorieFoodCal from '@/components/Calorie_Food_Cal.vue';
 import CalorieTracker from '@/components/Calorie_Tracker.vue';
 import CalorieWeightTracker from '@/components/Calorie_Weight_Tracker.vue';
+=======
+import CalorieGoalCal from '../components/Calorie_Goal_Cal.vue'; // 确保路径正确
+import CalorieTracker from "../components/Calorie_Tracker.vue"; // 确保路径正确
+import CalorieWeightTracker from "../components/Calorie_Wei_Tracker.vue"; // 确保路径正确
+>>>>>>> Stashed changes
 
 const calorieData = ref({
   gender: '男',
