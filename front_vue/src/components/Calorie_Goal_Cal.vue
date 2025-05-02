@@ -128,46 +128,21 @@ const calculateBMI = (height, weight) => {
 // Fetch saved data when the component is mounted
 onMounted(async () => {
   try {
-    // First fetch user profile info to get the latest calorie goal
+    // Only fetch the calorie goal from the user profile
     const profileResponse = await axios.get('http://localhost:5000/users/user-info', { 
       withCredentials: true 
     });
     
     if (profileResponse.data && profileResponse.data.calorie_goal) {
+      // Update only the calorie goal value
       localCalorieGoal.value = profileResponse.data.calorie_goal;
+      localCalorieData.value.calorie_goal = profileResponse.data.calorie_goal;
     }
     
-    // Then fetch detailed calorie data if available
-    const calorieResponse = await axios.get('http://localhost:5000/calorie/get_saved_data', { 
-      withCredentials: true 
-    });
-    
-    if (calorieResponse.data && calorieResponse.data.data) {
-      const userData = calorieResponse.data.data;
-      
-      // Update all fields with saved data
-      Object.keys(userData).forEach(key => {
-        if (userData[key] !== null && userData[key] !== undefined) {
-          localCalorieData.value[key] = userData[key];
-        }
-      });
-      
-      // Ensure the calorie_goal is set from the most up-to-date source
-      if (userData.calorie_goal) {
-        localCalorieGoal.value = userData.calorie_goal;
-      }
-      
-      // Always update the form data with the current goal
-      localCalorieData.value.calorie_goal = localCalorieGoal.value;
-    }
-    
-    // Calculate BMI after all data is loaded
+    // Calculate BMI if height and weight are provided in form
     bmi.value = calculateBMI(localCalorieData.value.height, localCalorieData.value.current_weight);
-    
   } catch (error) {
-    console.error('Failed to fetch saved data:', error);
-    // Even in case of error, calculate BMI with default values
-    bmi.value = calculateBMI(localCalorieData.value.height, localCalorieData.value.current_weight);
+    console.error('Failed to fetch calorie goal:', error);
   }
 });
 
@@ -209,7 +184,7 @@ const onSaveCalorieGoal = async () => {
                                      localCalorieData.value, 
                                      { withCredentials: true });
     
-    // Also update the user profile with the calorie goal to ensure consistency
+    // Also update the user profile with just the calorie goal
     await axios.put('http://localhost:5000/users/profile', 
                    { calorie_goal: localCalorieGoal.value }, 
                    { withCredentials: true });

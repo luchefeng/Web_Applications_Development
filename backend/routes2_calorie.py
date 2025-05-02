@@ -61,34 +61,13 @@ def save_calorie_goal():
         current_user.target_weight = data.get('target_weight')
         current_user.activity_level = data.get('activity_level')
         current_user.timeframe = data.get('timeframe')
-        current_user.calorie_goal = data.get('calorie_goal')  # Make sure this is properly saved
+        current_user.calorie_goal = data.get('calorie_goal')
 
         db.session.commit()
         return jsonify({'message': '卡路里目标保存成功！'}), 200
     except Exception as e:
         print('Error in save_calorie_goal:', traceback.format_exc())
-        db.session.rollback()  # In case of error, rollback the session
         return jsonify({'message': '保存卡路里目标失败，请稍后再试。'}), 500
-
-@calorie_bp.route('/get_calorie_goal', methods=['GET'])
-@login_required
-def get_calorie_goal():
-    try:
-        # Retrieve the user's saved calorie data
-        saved_data = {
-            'gender': current_user.gender,
-            'age': current_user.age,
-            'height': current_user.height,
-            'current_weight': current_user.current_weight,
-            'target_weight': current_user.target_weight,
-            'activity_level': current_user.activity_level,
-            'timeframe': current_user.timeframe,
-            'calorie_goal': current_user.calorie_goal
-        }
-        return jsonify({'message': '获取保存的数据成功！', 'data': saved_data}), 200
-    except Exception as e:
-        print('Error in get_calorie_goal:', traceback.format_exc())
-        return jsonify({'message': '获取保存的数据失败，请稍后再试。'}), 500
 
 # 计算 BMR
 def calculate_bmr(gender, weight, height, age):
