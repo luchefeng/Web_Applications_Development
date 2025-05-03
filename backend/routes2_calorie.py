@@ -179,21 +179,6 @@ def recipe_fits_criteria(recipe, calories, meal_type):
     # 實現判斷菜譜是否符合卡路里範圍和餐別的邏輯
     return True  # 示例中所有菜譜都符合
 
-@calorie_bp.route('/get_saved_data', methods=['GET'])
-@login_required
-def get_saved_data():
-    try:
-        # Retrieve the user's saved calorie data
-        saved_data = {
-            'current_weight': current_user.current_weight,
-            'target_weight': current_user.target_weight,
-            'calorie_goal': current_user.calorie_goal
-        }
-        return jsonify({'message': '获取保存的数据成功！', 'data': saved_data}), 200
-    except Exception as e:
-        print('Error in get_saved_data:', traceback.format_exc())
-        return jsonify({'message': '获取保存的数据失败，请稍后再试。'}), 500
-
 @calorie_bp.route('/weight_records', methods=['GET'])
 @login_required
 def get_weight_records():

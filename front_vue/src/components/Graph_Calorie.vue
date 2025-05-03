@@ -34,20 +34,15 @@ const fetchCalorieData = async () => {
   loading.value = true;
   error.value = '';
   try {
-    // 先获取用户数据，包括准确的卡路里目标
+    // 仅从用户信息端点获取目标卡路里
     try {
-      // 使用 user-info 端点，它会返回完整的用户数据，包括正确的 calorie_goal
       const userResponse = await axios.get('http://localhost:5000/users/user-info', { withCredentials: true });
       if (userResponse.data && userResponse.data.calorie_goal) {
         targetCalorie.value = userResponse.data.calorie_goal;
         console.log('Fetched calorie goal from user profile:', targetCalorie.value);
       } else {
-        // 备用方案：从卡路里特定端点获取
-        const goalResponse = await axios.get('http://localhost:5000/calorie/get_saved_data', { withCredentials: true });
-        if (goalResponse.data && goalResponse.data.data && goalResponse.data.data.calorie_goal) {
-          targetCalorie.value = goalResponse.data.data.calorie_goal;
-          console.log('Fetched calorie goal from calorie endpoint:', targetCalorie.value);
-        }
+        // 如果用户信息中没有目标卡路里，保持默认值
+        console.log('No calorie goal found in user profile, using default:', targetCalorie.value);
       }
     } catch (goalError) {
       console.error('Failed to fetch calorie goal:', goalError);

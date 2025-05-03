@@ -24,7 +24,6 @@ import * as echarts from 'echarts';
 
 const chartRef = ref(null);
 const weightData = ref([]);
-const targetWeight = ref(65); // 目标体重
 const dateRange = ref([0, 0]);
 const loading = ref(true);
 const error = ref('');
@@ -39,15 +38,6 @@ const fetchWeightData = async () => {
       weightData.value = response.data.records;
       if (weightData.value.length > 0) {
         dateRange.value = [0, weightData.value.length - 1];
-        // 获取目标体重
-        try {
-          const goalResponse = await axios.get('http://localhost:5000/calorie/get_saved_data', { withCredentials: true });
-          if (goalResponse.data && goalResponse.data.data) {
-            targetWeight.value = goalResponse.data.data.target_weight || 65;
-          }
-        } catch (goalError) {
-          console.error('Failed to fetch target weight:', goalError);
-        }
       }
     } else {
       weightData.value = [];
@@ -86,9 +76,6 @@ const updateChart = () => {
     tooltip: {
       trigger: 'axis'
     },
-    legend: {
-      data: ['实际体重', '目标体重']
-    },
     grid: {
       left: '3%',
       right: '4%',
@@ -101,23 +88,14 @@ const updateChart = () => {
       data: filteredData.value.map(item => item.date)
     },
     yAxis: {
-      type: 'value'
+      type: 'value',
+      name: '体重 (kg)'
     },
     series: [
       {
-        name: '实际体重',
+        name: '体重',
         type: 'line',
         data: filteredData.value.map(item => item.weight),
-        smooth: true
-      },
-      {
-        name: '目标体重',
-        type: 'line',
-        data: Array(filteredData.value.length).fill(targetWeight.value),
-        lineStyle: {
-          type: 'dashed',
-          color: '#FF4500'
-        },
         smooth: true
       }
     ]
