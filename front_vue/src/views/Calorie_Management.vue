@@ -21,10 +21,19 @@
       <calorie-tracker />
     </div>
 
-
     <!-- 體重記錄 -->
     <div name="calorie-tracker" class="form-section">
       <calorie-weight-tracker />
+    </div>
+
+    <!-- 卡路里摄入图表 -->
+    <div name="calorie-graph" class="form-section">
+      <graph-calorie />
+    </div>
+
+    <!-- 体重记录图表 -->
+    <div name="weight-graph" class="form-section">
+      <graph-weight />
     </div>
 
     <!-- 科普栏 -->
@@ -47,6 +56,8 @@ import CalorieGoalCal from '../components/Calorie_Goal_Cal.vue'; // 确保路径
 import CalorieFoodCal from '../components/Calorie_Food_Cal.vue'; // 确保路径正确
 import CalorieTracker from "../components/Calorie_Tracker.vue"; // 确保路径正确
 import CalorieWeightTracker from "../components/Calorie_Wei_Tracker.vue"; // 确保路径正确
+import GraphCalorie from '../components/Graph_Calorie.vue';
+import GraphWeight from '../components/Graph_Weight.vue';
 
 const errorMessage = ref('');
 const successMessage = ref('');

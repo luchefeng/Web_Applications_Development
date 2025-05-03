@@ -185,16 +185,77 @@ def get_saved_data():
     try:
         # Retrieve the user's saved calorie data
         saved_data = {
-            'gender': current_user.gender,
-            'age': current_user.age,
-            'height': current_user.height,
             'current_weight': current_user.current_weight,
             'target_weight': current_user.target_weight,
-            'activity_level': current_user.activity_level,
-            'timeframe': current_user.timeframe,
             'calorie_goal': current_user.calorie_goal
         }
         return jsonify({'message': '获取保存的数据成功！', 'data': saved_data}), 200
     except Exception as e:
         print('Error in get_saved_data:', traceback.format_exc())
         return jsonify({'message': '获取保存的数据失败，请稍后再试。'}), 500
+
+@calorie_bp.route('/weight_records', methods=['GET'])
+@login_required
+def get_weight_records():
+    try:
+        records = WeightRecord.query.filter_by(user_id=current_user.id).all()
+        data = [{'date': record.date.strftime('%Y-%m-%d'), 'weight': record.weight} for record in records]
+        return jsonify({'records': data}), 200
+    except Exception as e:
+        print('Error in get_weight_records:', traceback.format_exc())
+        return jsonify({'message': '获取体重记录失败，请稍后再试。'}), 500
+
+@calorie_bp.route('/intake_records', methods=['GET'])
+@login_required
+def get_intake_records():
+    try:
+        records = CalorieIntake.query.filter_by(user_id=current_user.id).all()
+        
+        # 使用字典按日期聚合卡路里摄入
+        daily_totals = {}
+        
+        for record in records:
+            try:
+                # 获取日期字符串（只保留年月日）
+                if hasattr(record.meal_time, 'strftime'):
+                    date_str = record.meal_time.strftime('%Y-%m-%d')
+                else:
+                    # 如果是字符串，确保只提取日期部分
+                    date_parts = record.meal_time.split(' ')[0]  # 获取第一部分，即日期部分
+                    
+                    # 确保日期格式为YYYY-MM-DD
+                    if date_parts.count('-') == 2:
+                        date_str = date_parts
+                    elif date_parts.count('/') == 2:
+                        # 如果使用斜杠分隔，转换为横杠分隔
+                        parts = date_parts.split('/')
+                        date_str = f"{parts[0]}-{parts[1]}-{parts[2]}"
+                    else:
+                        # 如果格式无法识别，使用当前日期
+                        from datetime import datetime
+                        date_str = datetime.now().strftime('%Y-%m-%d')
+                
+                # 将卡路里值转换为数值并累加到对应日期
+                try:
+                    intake_value = float(record.intake)
+                    if date_str in daily_totals:
+                        daily_totals[date_str] += intake_value
+                    else:
+                        daily_totals[date_str] = intake_value
+                except (ValueError, TypeError) as e:
+                    print(f"Error converting intake to float: {e}")
+                    continue
+                    
+            except Exception as e:
+                print(f"Error processing record {record.id}: {str(e)}")
+                continue
+        
+        # 将聚合后的数据转换为列表格式
+        data = [{'date': date, 'intake': round(total, 1)} for date, total in daily_totals.items()]
+        # 按日期排序
+        data.sort(key=lambda x: x['date'])
+                
+        return jsonify({'records': data}), 200
+    except Exception as e:
+        print('Error in get_intake_records:', traceback.format_exc())
+        return jsonify({'message': '获取卡路里摄入记录失败，请稍后再试。'}), 500

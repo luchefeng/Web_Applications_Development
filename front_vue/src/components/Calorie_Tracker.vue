@@ -40,7 +40,7 @@ import axios from 'axios';
 // 初始化 intakeData，确保所有属性存在
 const intakeData = ref({
   intake: '', // 初始化为字符串或数字
-  meal_time: '', // 初始化为字符串
+  meal_time: new Date().toLocaleString(), // 初始化为当前时间字符串
   food_item: '' // 初始化为字符串
 });
 
