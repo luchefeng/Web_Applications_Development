@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Stage 1: Build the frontend
 FROM node:18 AS frontend-builder
 WORKDIR /app
@@ -29,3 +30,18 @@ ENV FLASK_ENV=production
 
 # Command to run the Flask application
 CMD ["python", "backend/app2.py"]
+=======
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# 安装依赖
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制应用代码
+COPY . .
+
+# 设置启动命令
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "backend.app2:app"]
+>>>>>>> Stashed changes
